@@ -27,7 +27,7 @@ using namespace DirectX;
 ShipModel::ShipModel() 
 	: IGeometry(),
 	LogUser(true, SHIPMODEL_START_MSG_PREFIX),
-	rootTransform(0), body(0), leftWing(0), rightWing(0)
+	rootTransform(0), body(0), leftWing(0), rightWing(0), cube(0)
 {
 	rootTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	body = new CubeModel(rootTransform,
@@ -40,6 +40,8 @@ ShipModel::ShipModel()
 	wingTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
 	rightWing = new CubeModel(wingTransform,
 							  1.0f, 0.75f, 3.0f, 0);
+
+	cube = new GridCubeTextured(1.0f, 1.0f, 1.0f, 0);
 }
 
 ShipModel::~ShipModel(void) 
@@ -58,6 +60,11 @@ ShipModel::~ShipModel(void)
 		delete rightWing;
 		rightWing = 0;
 	}
+
+	if (cube != 0) {
+		delete cube;
+		cube = 0;
+	}
 }
 
 HRESULT ShipModel::initialize(ID3D11Device* d3dDevice)
@@ -74,9 +81,14 @@ HRESULT ShipModel::initialize(ID3D11Device* d3dDevice)
 		logMessage(L"Failed to initialize CubeModel object.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
+	if (FAILED(cube->initialize(d3dDevice))) {
+		logMessage(L"Failed to initialize GridCubeModel object.");
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+	}
 
 	leftWing->setParentTransformable(body->getTransformable());
 	rightWing->setParentTransformable(body->getTransformable());
+	cube->setParentTransformable(body->getTransformable());
 
 	return ERROR_SUCCESS;
 }
@@ -87,6 +99,13 @@ HRESULT ShipModel::spawn(Octtree* octtree)
 	shipObject->addTransformable(body->getTransformable());
 	shipObject->addTransformable(leftWing->getTransformable());
 	shipObject->addTransformable(rightWing->getTransformable());
+
+	shipObject->addTransformable(cube->m_rootTransform);
+	vector<Transformable*>* cubeTransformList = cube->getTransformables();
+	for (int i = 0; i < cubeTransformList->size(); ++i) {
+		shipObject->addTransformable(cubeTransformList->at(i));
+	}
+
 	if (octtree->addObject(shipObject) == -1){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
@@ -112,6 +131,10 @@ HRESULT ShipModel::drawUsingAppropriateRenderer(
 		logMessage(L"Failed to draw CubeModel object.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
+	if (FAILED(cube->drawUsingAppropriateRenderer(context, manager, camera))) {
+		logMessage(L"Failed to draw GridCubeModel object.");
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+	}
 
 	return ERROR_SUCCESS;
 }
@@ -128,6 +151,10 @@ HRESULT ShipModel::setTransformables(const std::vector<Transformable*>* const tr
 	}
 	if (FAILED(rightWing->setTransformables(transforms))) {
 		logMessage(L"Failed to set CubeModel object transforms.");
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+	}
+	if (FAILED(cube->setTransformables(transforms))) {
+		logMessage(L"Failed to set GridCubeModel object transforms.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	return ERROR_SUCCESS;

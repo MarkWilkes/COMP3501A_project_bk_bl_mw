@@ -1,0 +1,82 @@
+# Configuration file for the gridcubetextured model
+# (a GridQuadTextured array)
+
+# GridCubeTextured LogUser configuration
+# -----------------------------------------------
+BOOL -- GridCubeTextured_LogUser::enableLogging = true
+WSTRING -- GridCubeTextured_LogUser::msgPrefix = L"GridCubeTextured Geometry"
+BOOL -- GridCubeTextured_LogUser::useGlobalLog = false
+BOOL -- GridCubeTextured_LogUser::allocConsole = false
+BOOL -- GridCubeTextured_LogUser::allocLogFile = true
+FILENAME -- GridCubeTextured_LogUser::logFileName = "GameStateLog.txt"
+DIRECTORY -- GridCubeTextured_LogUser::logFilePath = "..\logFiles"
+BOOL -- GridCubeTextured_LogUser::overwriteFile = false
+BOOL -- GridCubeTextured_LogUser::timestampEnable = true
+
+# GridCubeTextured ConfigUser configuration
+# -----------------------------------------
+BOOL -- GridCubeTextured_ConfigUser::enableConfigUseLogging = true
+
+# GridCubeTextured geometry configuration
+# -----------------------------------------------
+INT -- GridCubeTextured::nColumns = 20
+INT -- GridCubeTextured::nRows = 20
+DOUBLE -- GridCubeTextured::transparencyMultiplier = 1.0
+BOOL -- GridCubeTextured::debugWinding = false
+
+# GridCubeTextured material configuration
+# ---------------------------------------
+FLOAT4 -- GridCubeTextured::ambientAlbedo = (1.5, 0.8, 1.0, 1.0)
+FLOAT4 -- GridCubeTextured::diffuseAlbedo = (1.2, 0.8, 1.0, 1.0)
+FLOAT4 -- GridCubeTextured::specularAlbedo = (1.0, 1.0, 1.0, 1.0)
+DOUBLE -- GridCubeTextured::specularPower = 10.0
+
+# GridCubeTextured lighting configuration
+# ---------------------------------------
+BOOL -- GridCubeTextured::renderWithLighting = true
+
+# GridCubeTextured albedo texture controls
+# ----------------------------------------------
+BOOL -- GridCubeTextured::createAlbedoTexture = true
+BOOL -- GridCubeTextured::renderAlbedoTexture = true
+
+# GridCubeTextured albedo texture configuration
+# ----------------------------------------------
+BOOL -- GridCubeTextured::albedoTexture_enableLogging = true
+WSTRING -- GridCubeTextured::albedoTexture_msgPrefix = L"GridCubeTextured Geometry Albedo Texture"
+WSTRING -- GridCubeTextured::albedoTextureScope = L"albedoTexture"
+WSTRING -- GridCubeTextured::albedoTextureScope_LogUser = L"albedoTexture_LogUser"
+WSTRING -- GridCubeTextured::albedoTextureScope_ConfigUser = L"albedoTexture_ConfigUser"
+FILENAME -- GridCubeTextured::albedoTexture_inputConfigFileName = "gridcubetextured.txt"
+DIRECTORY -- GridCubeTextured::albedoTexture_inputConfigFilePath = "..\configFiles\geometry"
+
+# Albedo texture object configuration
+# ----------------------------------------------
+# LogUser
+BOOL -- albedoTexture_LogUser::enableLogging = true
+WSTRING -- albedoTexture_LogUser::msgPrefix = L"GridCubeTextured Geometry Albedo Texture"
+BOOL -- albedoTexture_LogUser::useGlobalLog = false
+BOOL -- albedoTexture_LogUser::allocConsole = false
+BOOL -- albedoTexture_LogUser::allocLogFile = true
+FILENAME -- albedoTexture_LogUser::logFileName = "GameStateLog.txt"
+DIRECTORY -- albedoTexture_LogUser::logFilePath = "..\logFiles"
+BOOL -- albedoTexture_LogUser::overwriteFile = false
+BOOL -- albedoTexture_LogUser::timestampEnable = true
+
+# ConfigUser
+BOOL -- albedoTexture_ConfigUser::enableConfigUseLogging = true
+
+# Sampler State
+INT -- albedoTexture::filter = 21
+INT -- albedoTexture::addressU = 4
+INT -- albedoTexture::addressV = 4
+INT -- albedoTexture::addressW = 4
+INT -- albedoTexture::maxAnisotropy = 1
+INT -- albedoTexture::comparisonFunc = 1
+COLOR -- albedoTexture::borderColor = (255, 255, 255, 255)
+
+# Texture
+# Note: Dashes were replaced with underscores in the filename
+#   (Otherwise the filename will not be deemed valid - Errors would be appended to this file.)
+FILENAME -- albedoTexture::textureFileName = "pia18092_mahli_sol627_windjana_500x537.dds"
+DIRECTORY -- albedoTexture::textureFilePath = "..\textures"

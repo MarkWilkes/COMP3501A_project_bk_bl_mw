@@ -34,6 +34,9 @@ Description
 #include "GameStateWithSSSE.h"
 #define STATECONTROL_FIRST_STATE GameStateWithSSSE
 
+//#include "AlbedoTextureTestState.h"
+//#define STATECONTROL_FIRST_STATE AlbedoTextureTestState
+
 //#include "ShipModelTestState.h"
 //#define STATECONTROL_FIRST_STATE ShipModelTestState
 

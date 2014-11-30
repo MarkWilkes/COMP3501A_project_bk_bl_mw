@@ -1,5 +1,5 @@
 /*
-ShipModel.h
+GridCubeTextured.h
 --------------------
 
 Created for: COMP3501A Assignment 5
@@ -10,31 +10,28 @@ Brandon Keyes, ID: 100897196
 Bernard Llanos, ID: 100793648
 Mark Wilkes, ID: 100884169
 
-Created October 31, 2014
-Adapted for COMP3501A Project on October 31, 2014
+Created November 28, 2014
 
 Primary basis: GridQuadTextured.h
-Secondary basis: A2Cylinder.h (COMP3501A Assignment 2 - Bernard Llanos)
 
 Description
--A model of the player ship.
+-A cube made of GridQuadTexture objects.
 */
 
 #pragma once
 
 #include <DirectXMath.h>
+#include <vector>
 #include "Transformable.h"
-#include "CubeModel.h"
-#include "../../engine/GridCubeTextured.h"
+#include "GridQuadTextured.h"
 #include "LogUser.h"
 #include "../../oct_tree.h"
 #include "../../ObjectModel.h"
 #include "IGeometry.h"
 #include <string>
-#include <vector>
 
 // Default log message prefix used before more information is available
-#define SHIPMODEL_START_MSG_PREFIX L"ShipModel "
+#define GRIDCUBETEXTURED_START_MSG_PREFIX L"GridCubeTextured "
 
 /* The following definitions are:
 -Key parameters used to retrieve configuration data
@@ -42,26 +39,24 @@ Description
 or constructor/function arguments (where necessary)
 */
 
-#define SHIPMODEL_SCOPE L"ShipModel"
+#define GRIDCUBETEXTURED_SCOPE L"GridCubeTextured"
 
 /* LogUser and ConfigUser configuration parameters
 Refer to LogUser.h and ConfigUser.h
 */
-#define SHIPMODEL_LOGUSER_SCOPE		L"ShipModel_LogUser"
-#define SHIPMODEL_CONFIGUSER_SCOPE		L"ShipModel_ConfigUser"
+#define GRIDCUBETEXTURED_LOGUSER_SCOPE		L"GridCubeTextured_LogUser"
+#define GRIDCUBETEXTURED_CONFIGUSER_SCOPE	L"GridCubeTextured_ConfigUser"
 
-class ShipModel : public IGeometry, public LogUser
+class GridCubeTextured : public IGeometry, public LogUser
 {
 	// Initialization and destruction
 public:
 
-	ShipModel();
-	virtual ~ShipModel(void);
+	GridCubeTextured(float lengthX, float lengthY, float lengthZ, XMFLOAT4 * pColors);
+	virtual ~GridCubeTextured(void);
 
 	HRESULT spawn(Octtree*);
 	HRESULT initialize(ID3D11Device* d3dDevice);
-	// body is root transform
-	Transformable* rootTransform;
 
 	virtual HRESULT drawUsingAppropriateRenderer(
 		ID3D11DeviceContext* const context,
@@ -70,16 +65,28 @@ public:
 		) override;
 
 	virtual HRESULT setTransformables(const std::vector<Transformable*>* const transforms) override;
-	virtual XMFLOAT3 getPosition() override;
+
+	Transformable* m_rootTransform;
+	void setParentTransformable(Transformable* theParent);
+
 	virtual float getRadius() override;
-	
+	virtual XMFLOAT3 getPosition() override;
+	std::vector<Transformable*>* getTransformables();
+
 private:
-	CubeModel* body;
-	CubeModel* leftWing;
-	CubeModel* rightWing;
+	/*
+	0 - top face
+	1 - bottom face
+	2 - left face
+	3 - right face
+	4 - front face
+	5 - back face
+	*/
+	GridQuadTextured* m_gridQuadList[6];
 
-	GridCubeTextured* cube;
+	std::vector<Transformable*>* m_quadBones;
+	std::vector<Transformable*>* m_quadBones_shared;
 
-	ShipModel(const ShipModel& other);
-	ShipModel& operator=(const ShipModel& other);
+	GridCubeTextured(const GridCubeTextured& other);
+	GridCubeTextured& operator=(const GridCubeTextured& other);
 };

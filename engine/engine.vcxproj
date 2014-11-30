@@ -34,6 +34,7 @@
     <ClCompile Include="cpp\util\Texture.cpp" />
     <ClCompile Include="cpp\util\TextureFromDDS.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GridCubeTextured.cpp" />
     <ClCompile Include="ObjectModel.cpp" />
     <ClCompile Include="oct_node.cpp" />
     <ClCompile Include="oct_tree.cpp" />
@@ -58,6 +59,7 @@
     <ClCompile Include="test\cpp\TexturedSphereTestState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GridCubeTextured.h" />
     <ClInclude Include="header\GameStateWithParticles.h" />
     <ClInclude Include="header\GameStateWithSSSE.h" />
     <ClInclude Include="header\geometry\RandomBurstCone.h" />

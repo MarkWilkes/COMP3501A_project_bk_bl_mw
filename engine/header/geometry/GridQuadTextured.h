@@ -78,6 +78,9 @@ public:
 		const std::vector<Transformable*>* const bones,
 		const DirectX::XMFLOAT4X4* const bindMatrices = 0);
 
+	
+	void setParentTransformable(Transformable* theParent);
+
 public:
 
 	/* Provides public access to the base class function
@@ -114,6 +117,7 @@ public:
 
 	virtual float getRadius() override;
 	virtual XMFLOAT3 getPosition() override;
+	//Transformable* getTransformable() const;
 
 protected:
 

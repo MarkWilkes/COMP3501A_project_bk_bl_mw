@@ -63,7 +63,7 @@
     </Filter>
     <Filter Include="source\camera">
       <UniqueIdentifier>{5593d4eb-95bd-4239-8339-3e57ee398210}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="header\ssse">
       <UniqueIdentifier>{afbe15ce-1e49-4fda-a198-92a74650a3dc}</UniqueIdentifier>
     </Filter>
@@ -179,7 +179,7 @@
     </ClCompile>
     <ClCompile Include="cpp\camera\CameraTransformable.cpp">
       <Filter>source\camera</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="cpp\geometry\InvariantTexturedParticles.cpp">
       <Filter>source\geometry</Filter>
     </ClCompile>
@@ -206,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="cpp\geometry\RandomBurstCone.cpp">
       <Filter>source\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCubeTextured.cpp">
+      <Filter>Unprocessed Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,7 +337,7 @@
     </ClInclude>
     <ClInclude Include="header\camera\CameraTransformable.h">
       <Filter>header\camera</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="header\geometry\InvariantTexturedParticles.h">
       <Filter>header\geometry</Filter>
     </ClInclude>
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="header\geometry\RandomBurstCone.h">
       <Filter>header\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCubeTextured.h">
+      <Filter>Unprocessed Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -420,3 +420,14 @@ XMFLOAT3 GridQuadTextured::getPosition(){
 	*/
 	return XMFLOAT3(0, 0, 0);
 }
+
+/*
+void GridQuadTextured::setParentTransformable(Transformable* theParent)
+{
+	m_transform->setParent(theParent);
+}
+
+Transformable* GridQuadTextured::getTransformable() const
+{
+	return m_transform;
+}*/
