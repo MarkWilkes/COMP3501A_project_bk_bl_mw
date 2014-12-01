@@ -52,7 +52,7 @@ class GridCubeTextured : public IGeometry, public LogUser
 	// Initialization and destruction
 public:
 
-	GridCubeTextured(float lengthX, float lengthY, float lengthZ, XMFLOAT4 * pColors);
+	GridCubeTextured(XMFLOAT3 scale, XMFLOAT3 position, XMFLOAT4 orientation, XMFLOAT4 * pColors);
 	virtual ~GridCubeTextured(void);
 
 	HRESULT spawn(Octtree*);
@@ -84,8 +84,9 @@ private:
 	*/
 	GridQuadTextured* m_gridQuadList[6];
 
-	std::vector<Transformable*>* m_quadBones;
-	std::vector<Transformable*>* m_quadBones_shared;
+	std::vector<Transformable*>* m_quadBones[6];
+	std::vector<Transformable*>* m_quadBones_shared[6];
+	std::vector<Transformable*>* m_allQuadBones;
 
 	GridCubeTextured(const GridCubeTextured& other);
 	GridCubeTextured& operator=(const GridCubeTextured& other);

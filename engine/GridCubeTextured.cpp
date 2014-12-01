@@ -11,7 +11,7 @@ using std::wstring;
 
 #define GRIDCUBETEXTURED_NQUADBONES 4
 
-GridCubeTextured::GridCubeTextured(float lengthX, float lengthY, float lengthZ, XMFLOAT4 * pColors)
+GridCubeTextured::GridCubeTextured(XMFLOAT3 scale, XMFLOAT3 position, XMFLOAT4 orientation, XMFLOAT4 * pColors)
  : IGeometry(), LogUser(true, GRIDCUBETEXTURED_START_MSG_PREFIX),
  m_rootTransform(0)
 {
@@ -29,14 +29,16 @@ GridCubeTextured::~GridCubeTextured()
 		}
 	}
 	
-	if (m_quadBones != 0) {
-		delete m_quadBones;
-		m_quadBones = 0;
-	}
+	for (int i = 0; i < 6; ++i) {
+		if (m_quadBones[i] != 0) {
+			delete m_quadBones[i];
+			m_quadBones[i] = 0;
+		}
 
-	if (m_quadBones_shared != 0) {
-		delete m_quadBones_shared;
-		m_quadBones_shared = 0;
+		if (m_quadBones_shared[i] != 0) {
+			delete m_quadBones_shared[i];
+			m_quadBones_shared[i] = 0;
+		}
 	}
 }
 
@@ -51,34 +53,67 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	5 - back face
 	*/
 
-	XMFLOAT3 cornerPositions[GRIDCUBETEXTURED_NQUADBONES];
-	cornerPositions[0] = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	cornerPositions[1] = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	cornerPositions[2] = XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	cornerPositions[3] = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	XMFLOAT3 cornerPositions[6][GRIDCUBETEXTURED_NQUADBONES];
+	XMFLOAT3 cornerScales[6][GRIDCUBETEXTURED_NQUADBONES];
+	XMFLOAT4 cornerOrientations[6][GRIDCUBETEXTURED_NQUADBONES];
 
-	XMFLOAT3 cornerScales[GRIDCUBETEXTURED_NQUADBONES];
-	cornerScales[0] = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	cornerScales[1] = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	cornerScales[2] = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	cornerScales[3] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	// top face
+	cornerPositions[0][0] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+	cornerPositions[0][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+	cornerPositions[0][2] = XMFLOAT3(1.0f, 1.0f, -1.0f);
+	cornerPositions[0][3] = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-	XMFLOAT4 cornerOrientations[GRIDCUBETEXTURED_NQUADBONES];
-	cornerOrientations[0] = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	cornerOrientations[1] = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	cornerOrientations[2] = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	cornerOrientations[3] = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	// bottom face
+	cornerPositions[1][0] = XMFLOAT3(1.0f, -1.0f, 1.0f);
+	cornerPositions[1][1] = XMFLOAT3(1.0f, -1.0f, -1.0f);
+	cornerPositions[1][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
+	cornerPositions[1][3] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
 
-	m_quadBones = new std::vector<Transformable*>();
-	for (size_t i = 0; i < GRIDCUBETEXTURED_NQUADBONES; ++i) {
-		Transformable* newTransform = new Transformable(cornerScales[i], cornerPositions[i], cornerOrientations[i]);
-		newTransform->setParent(m_rootTransform);
-		m_quadBones->push_back(newTransform);
+	// left face
+	cornerPositions[2][0] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
+	cornerPositions[2][1] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
+	cornerPositions[2][2] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+	cornerPositions[2][3] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+
+	// right face
+	cornerPositions[3][0] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	cornerPositions[3][1] = XMFLOAT3(1.0f, 1.0f, -1.0f);
+	cornerPositions[3][2] = XMFLOAT3(1.0f, -1.0f, -1.0f);
+	cornerPositions[3][3] = XMFLOAT3(1.0f, -1.0f, 1.0f);
+
+	// front face
+	cornerPositions[4][0] = XMFLOAT3(1.0f, 1.0f, -1.0f);
+	cornerPositions[4][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+	cornerPositions[4][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
+	cornerPositions[4][3] = XMFLOAT3(1.0f, -1.0f, -1.0f);
+
+	// back face
+	cornerPositions[5][0] = XMFLOAT3(1.0f, -1.0f, 1.0f);
+	cornerPositions[5][1] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
+	cornerPositions[5][2] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+	cornerPositions[5][3] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+
+	for (int i = 0; i < 6; ++i) {
+		for (int k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
+			cornerScales[i][k] = m_rootTransform->getScale();
+			cornerOrientations[i][k] = m_rootTransform->getOrientation();
+		}
 	}
 
-	m_quadBones_shared = new std::vector<Transformable*>();
-	for (size_t i = 0; i < GRIDCUBETEXTURED_NQUADBONES; ++i) {
-		m_quadBones_shared->push_back((*m_quadBones)[i]);
+	m_allQuadBones = new std::vector<Transformable*>();
+	for (int i = 0; i < 6; ++i) {
+		m_quadBones[i] = new std::vector<Transformable*>();
+		for (size_t k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
+			Transformable* newTransform = new Transformable(cornerScales[i][k], cornerPositions[i][k], cornerOrientations[i][k]);
+			newTransform->setParent(m_rootTransform);
+			m_quadBones[i]->push_back(newTransform);
+			m_allQuadBones->push_back(newTransform);
+		}
+
+		m_quadBones_shared[i] = new std::vector<Transformable*>();
+		for (size_t k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
+			m_quadBones_shared[i]->push_back(m_quadBones[i]->at(k));
+		}
 	}
 
 	// Vertex skinning geometry
@@ -119,7 +154,7 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	for (int i = 0; i < 6; ++i) {
 		m_gridQuadList[i] = new GridQuadTextured(true, L"GridQuadTextured Object: ", &config);
 
-		result = m_gridQuadList[i]->initialize(d3dDevice, m_quadBones_shared, 0);
+		result = m_gridQuadList[i]->initialize(d3dDevice, m_quadBones_shared[i], 0);
 		if (FAILED(result)) {
 			logMessage(L"Failed to initialize GridCubeTextured object.");
 			result = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
@@ -174,5 +209,5 @@ float GridCubeTextured::getRadius()
 
 std::vector<Transformable*>* GridCubeTextured::getTransformables()
 {
-	return m_quadBones;
+	return m_allQuadBones;
 }

@@ -41,7 +41,7 @@ ShipModel::ShipModel()
 	rightWing = new CubeModel(wingTransform,
 							  1.0f, 0.75f, 3.0f, 0);
 
-	cube = new GridCubeTextured(1.0f, 1.0f, 1.0f, 0);
+	cube = new GridCubeTextured(XMFLOAT3(2.0f, 1.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.5f, 0.0f, 0.0f, 1.0f), 0);
 }
 
 ShipModel::~ShipModel(void) 
@@ -101,7 +101,7 @@ HRESULT ShipModel::spawn(Octtree* octtree)
 	shipObject->addTransformable(rightWing->getTransformable());
 
 	shipObject->addTransformable(cube->m_rootTransform);
-	vector<Transformable*>* cubeTransformList = cube->getTransformables();
+	std::vector<Transformable*>* cubeTransformList = cube->getTransformables();
 	for (int i = 0; i < cubeTransformList->size(); ++i) {
 		shipObject->addTransformable(cubeTransformList->at(i));
 	}
