@@ -436,11 +436,17 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
+	srand(time(NULL));
+
 	for (size_t i = 0; i < n; ++i){
 
 		newObject = new ObjectModel(m_asteroid, false);
 
-		offset = XMFLOAT3(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i));
+		float offSX = rand() % 1000 - 500;
+		float offSY = rand() % 1000 - 500;
+		float offSZ = rand() % 1000 - 500;
+		//offset = XMFLOAT3(static_cast<float>(i*2), static_cast<float>(i*2), static_cast<float>(i*2));
+		offset = XMFLOAT3(offSX, offSY, offSZ);
 
 		// Center
 		bone = new Transformable(scale, offset, orientation);
