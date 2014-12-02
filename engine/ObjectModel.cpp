@@ -14,9 +14,9 @@ It is used for the storage of these attributes in the OctTree
 // Logging output and configuration input filename
 #define OBJECTMODEL_FILE_NAME L"ObjectModel.txt"
 
-ObjectModel::ObjectModel(IGeometry* geometry) :
+ObjectModel::ObjectModel(IGeometry* geometry, bool npcMover) :
 LogUser(true, OBJECTMODEL_START_MSG_PREFIX),
-model(0), tForms(0)
+model(0), tForms(0), isMover(npcMover), seeking(npcMover), goalPoint(0,0,0), moveToPoint(0,0,0)
 {
 	model = geometry;
 	tForms = new vector<Transformable *>();
@@ -103,4 +103,39 @@ HRESULT ObjectModel::draw(ID3D11DeviceContext* const context, GeometryRendererMa
 	}
 
 	return result;
+}
+
+
+XMFLOAT3 ObjectModel::getGoalPos(){
+	return goalPoint;
+}
+
+XMFLOAT3 ObjectModel::getMovePos(){
+	return moveToPoint;
+}
+
+HRESULT ObjectModel::updateGoalPos(XMFLOAT3 newGoal){
+	if (isMover){
+		goalPoint = newGoal;
+		seeking = false;
+		return ERROR_SUCCESS;
+	}
+	return MAKE_HRESULT(SEVERITY_ERROR,FACILITY_BL_ENGINE, ERROR_WRONG_STATE);
+}
+
+bool ObjectModel::hasGoal(){
+	return !seeking;
+}
+
+HRESULT ObjectModel::updateMoveToPos(XMFLOAT3 newMovePos){
+		if (isMover){
+			moveToPoint = newMovePos;
+			seeking = false;
+			return ERROR_SUCCESS;
+		}
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_WRONG_STATE);
+}
+
+float ObjectModel::getMoveDist(){
+	return 20.0f;
 }

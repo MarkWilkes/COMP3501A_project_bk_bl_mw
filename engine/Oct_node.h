@@ -31,6 +31,8 @@ class Octnode{
 		int fits(ObjectModel * newGameObject);
 
 		int refit(ObjectModel * gameObject);
+
+		int refit(XMFLOAT3 pos, float radi);
 		
 		HRESULT checkObjectUpdates(vector<ObjectModel*>* outRefit);
 

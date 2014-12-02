@@ -194,3 +194,47 @@ int Octtree::checkCollisionsRay(vector<ObjectModel *>* outCollsion, XMFLOAT3 pos
 	
 	return result;
 }
+
+
+int Octtree::findNewGoal(ObjectModel* mover){
+	//TEMP make new random goal
+	if (mover->isMover){
+		while (true){
+			srand(time(0));
+			float x = rand() % (int)rootNode->length + rootNode->origin.x;
+			srand(time(0));
+			float y = rand() % (int)rootNode->length + rootNode->origin.y;
+			srand(time(0));
+			float z = rand() % (int)rootNode->length + rootNode->origin.z;
+			XMFLOAT3 newPos = XMFLOAT3(x, y, z);
+			if (rootNode->refit(newPos, mover->getBoundingRadius()) == 0){
+				mover->updateGoalPos(newPos);
+				return 0;
+			}
+		}
+	}
+
+	return -1;
+}
+
+
+int Octtree::pathObjectToGoal(ObjectModel* mover){
+	//TEMP method for moving around randomly not going towards goal
+	if (mover->isMover){
+		while (true){
+			srand(time(0));
+			float x = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().x) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().x);
+			srand(time(0));
+			float y = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().y) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().y);
+			srand(time(0));
+			float z = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().z) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().z);
+			XMFLOAT3 newPos = XMFLOAT3(x, y, z);
+			if (rootNode->refit(newPos, mover->getBoundingRadius()) == 0){
+				mover->updateMoveToPos(newPos);
+				return 0;
+			}
+		}
+	}
+
+	return -1;
+}

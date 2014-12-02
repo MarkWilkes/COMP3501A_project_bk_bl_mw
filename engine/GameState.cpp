@@ -438,7 +438,7 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 
 	for (size_t i = 0; i < n; ++i){
 
-		newObject = new ObjectModel(m_asteroid);
+		newObject = new ObjectModel(m_asteroid, false);
 
 		offset = XMFLOAT3(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i));
 
@@ -487,7 +487,7 @@ HRESULT GameState::spawnAsteroidsGrid(const size_t x, const size_t y, const size
 		for (size_t j = 0; j < y; ++j){
 			for (size_t k = 0; k < z; ++k){
 
-				newObject = new ObjectModel(m_asteroid);
+				newObject = new ObjectModel(m_asteroid, false);
 
 				float offsetAmount = static_cast<float>(m_asteroidGridSpacing);
 				offset = XMFLOAT3(static_cast<float>(i * offsetAmount), static_cast<float>(j * offsetAmount), static_cast<float>(k * offsetAmount));
@@ -608,7 +608,7 @@ HRESULT GameState::spawnPlayerShip()
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship);
+	newObject = new ObjectModel(m_ship, false);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -645,7 +645,7 @@ HRESULT GameState::spawnEnemyShip(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship);
+	newObject = new ObjectModel(m_ship,true);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-5.0f, -5.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -681,7 +681,7 @@ HRESULT GameState::spawnMine(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_mine);
+	newObject = new ObjectModel(m_mine,true);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT3(13.0f,13.0f,0.0f), XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
@@ -734,7 +734,7 @@ HRESULT GameState::spawnGalleon(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_galleon);
+	newObject = new ObjectModel(m_galleon,true);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-10.0f, -10.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
