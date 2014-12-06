@@ -12,12 +12,14 @@ using namespace std;
 #include "IGeometry.h"
 #include "LogUser.h"
 
+enum class ObjectType{EnemyShip, GalleonShip, MineShip, Other};
+
 // Logging message prefix
 #define OBJECTMODEL_START_MSG_PREFIX L"ObjectModel "
 
 class ObjectModel : public LogUser {
 	public:
-		ObjectModel(IGeometry* geometry, bool npcMover);
+		ObjectModel(IGeometry* geometry, ObjectType type);
 		virtual ~ObjectModel(void);
 
 		virtual XMFLOAT3 getBoundingOrigin();
@@ -28,14 +30,15 @@ class ObjectModel : public LogUser {
 		virtual HRESULT draw(ID3D11DeviceContext* const context, GeometryRendererManager& manager, Camera * camera);
 
 		virtual XMFLOAT3 getGoalPos();
-		virtual XMFLOAT3 getMovePos();
 		virtual HRESULT updateGoalPos(XMFLOAT3 newGoal);
 		virtual HRESULT updateMoveToPos(XMFLOAT3 newPos);
 		virtual bool hasGoal();
 		virtual float getMoveDist();
-		
-		const bool isMover;
 
+		virtual int getAgentNum();
+		virtual void setAgentNum(int aNum);
+
+		const ObjectType type;
 	protected:
 		IGeometry* model;
 		vector<Transformable*>* tForms;
@@ -43,4 +46,6 @@ class ObjectModel : public LogUser {
 		bool seeking;
 		XMFLOAT3 goalPoint;
 		XMFLOAT3 moveToPoint;
+
+		int agentNum;
 };

@@ -436,15 +436,15 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	for (size_t i = 0; i < n; ++i){
 
-		newObject = new ObjectModel(m_asteroid, false);
+		newObject = new ObjectModel(m_asteroid, ObjectType::Other);
 
-		float offSX = rand() % 1000 - 500;
-		float offSY = rand() % 1000 - 500;
-		float offSZ = rand() % 1000 - 500;
+		float offSX = (float)(rand() % 500 - 250);
+		float offSY = (float)(rand() % 500 - 250);
+		float offSZ = (float)(rand() % 500 - 250);
 		//offset = XMFLOAT3(static_cast<float>(i*2), static_cast<float>(i*2), static_cast<float>(i*2));
 		offset = XMFLOAT3(offSX, offSY, offSZ);
 
@@ -493,7 +493,7 @@ HRESULT GameState::spawnAsteroidsGrid(const size_t x, const size_t y, const size
 		for (size_t j = 0; j < y; ++j){
 			for (size_t k = 0; k < z; ++k){
 
-				newObject = new ObjectModel(m_asteroid, false);
+				newObject = new ObjectModel(m_asteroid, ObjectType::Other);
 
 				float offsetAmount = static_cast<float>(m_asteroidGridSpacing);
 				offset = XMFLOAT3(static_cast<float>(i * offsetAmount), static_cast<float>(j * offsetAmount), static_cast<float>(k * offsetAmount));
@@ -614,7 +614,7 @@ HRESULT GameState::spawnPlayerShip()
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship, false);
+	newObject = new ObjectModel(m_ship, ObjectType::Other);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -651,7 +651,7 @@ HRESULT GameState::spawnEnemyShip(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship,true);
+	newObject = new ObjectModel(m_ship, ObjectType::EnemyShip);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-5.0f, -5.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -687,7 +687,7 @@ HRESULT GameState::spawnMine(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_mine,true);
+	newObject = new ObjectModel(m_mine, ObjectType::MineShip);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT3(13.0f,13.0f,0.0f), XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
@@ -740,7 +740,7 @@ HRESULT GameState::spawnGalleon(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_galleon,true);
+	newObject = new ObjectModel(m_galleon, ObjectType::GalleonShip);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-10.0f, -10.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));

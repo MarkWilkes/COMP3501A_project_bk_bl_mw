@@ -1,10 +1,11 @@
 #include "oct_tree.h"
 #include "ObjectModel.h"
 
-Octtree::Octtree(XMFLOAT3 position, float length, int depth){
+Octtree::Octtree(XMFLOAT3 position, float length, int depth) : rvoSim(0){
 	maxDepth = depth;
 	rootNode = new Octnode(position, length, depth, 0, NULL);
 	completeObjectList = new vector<ObjectModel *>();
+	setupRVO();
 }
 
 Octtree::~Octtree(){
@@ -18,6 +19,11 @@ Octtree::~Octtree(){
 		delete completeObjectList;
 		completeObjectList = 0;
 	}
+
+	if (rvoSim != 0){
+		delete rvoSim;
+		rvoSim = 0;
+	}
 }
 
 int Octtree::addObject(ObjectModel * newGameObject){
@@ -25,6 +31,10 @@ int Octtree::addObject(ObjectModel * newGameObject){
 	if(rootNode->fits(newGameObject) == 0){
 		//only add the object to the list if it is put into the list at some point
 		completeObjectList->push_back(newGameObject);
+		//give it a goal
+		addAsAgent(newGameObject);
+		findNewGoal(newGameObject);
+		
 		return 0;
 	}
 	//something went wrong and the object doesn't fit anywhere in the tree
@@ -130,12 +140,12 @@ HRESULT Octtree::drawContents(ID3D11DeviceContext* const context, GeometryRender
 }
 
 HRESULT Octtree::update(const DWORD currentTime, const DWORD updateTimeInterval) {
+	updateSim();
 	for (std::vector<ObjectModel*>::size_type i = 0; i < completeObjectList->size(); i++){
 		if (FAILED(((*completeObjectList)[i]->updateContainedTransforms(currentTime, updateTimeInterval)))){
 			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 		}
 	}
-
 	return refitting();
 }
 
@@ -196,45 +206,78 @@ int Octtree::checkCollisionsRay(vector<ObjectModel *>* outCollsion, XMFLOAT3 pos
 }
 
 
-int Octtree::findNewGoal(ObjectModel* mover){
+int Octtree::findNewGoal(ObjectModel* obj){
 	//TEMP make new random goal
-	if (mover->isMover){
-		while (true){
-			srand(time(0));
-			float x = rand() % (int)rootNode->length + rootNode->origin.x;
-			srand(time(0));
-			float y = rand() % (int)rootNode->length + rootNode->origin.y;
-			srand(time(0));
-			float z = rand() % (int)rootNode->length + rootNode->origin.z;
-			XMFLOAT3 newPos = XMFLOAT3(x, y, z);
-			if (rootNode->refit(newPos, mover->getBoundingRadius()) == 0){
-				mover->updateGoalPos(newPos);
-				return 0;
-			}
-		}
+	if (obj->type != ObjectType::Other){
+		//TODO
+		//obj->updateGoalPos(obj->getBoundingOrigin());
+		srand((unsigned int)time(NULL));
+		//obj->updateGoalPos(XMFLOAT3((float)(rand() % 100) - 50, (float)(rand() % 100) - 50, (float)(rand() % 100) - 50));
+		obj->updateGoalPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	}
+	else{
+		obj->updateGoalPos(obj->getBoundingOrigin());
+		return 0;
 	}
 
 	return -1;
 }
 
+void Octtree::setupRVO(){
+	rvoSim = new RVO::RVOSimulator();
 
-int Octtree::pathObjectToGoal(ObjectModel* mover){
-	//TEMP method for moving around randomly not going towards goal
-	if (mover->isMover){
-		while (true){
-			srand(time(0));
-			float x = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().x) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().x);
-			srand(time(0));
-			float y = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().y) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().y);
-			srand(time(0));
-			float z = rand() % (int)(mover->getMoveDist() + mover->getBoundingOrigin().z) + (int)(mover->getMoveDist() - mover->getBoundingOrigin().z);
-			XMFLOAT3 newPos = XMFLOAT3(x, y, z);
-			if (rootNode->refit(newPos, mover->getBoundingRadius()) == 0){
-				mover->updateMoveToPos(newPos);
-				return 0;
-			}
+	rvoSim->setTimeStep(0.125f);
+
+	rvoSim->setAgentDefaults(20.0f, 10, 1.5f, 1.0f, 5.0f);
+}
+
+void Octtree::addAsAgent(ObjectModel* newObject){
+	RVO::Vector3 &vec = RVO::Vector3(newObject->getBoundingOrigin().x, newObject->getBoundingOrigin().y, newObject->getBoundingOrigin().z);
+	int numAgent = rvoSim->getNumAgents();
+	newObject->setAgentNum(numAgent);
+
+	rvoSim->addAgent(vec);
+}
+
+void Octtree::setPrefVelocity(){
+	for (size_t i = 0; i < completeObjectList->size(); i++){
+		RVO::Vector3 goal = RVO::Vector3(completeObjectList->at(i)->getGoalPos().x,
+			completeObjectList->at(i)->getGoalPos().y,
+			completeObjectList->at(i)->getGoalPos().z);
+
+		RVO::Vector3 goalVec = goal - rvoSim->getAgentPosition(completeObjectList->at(i)->getAgentNum());
+
+		if (RVO::absSq(goalVec)>1.0f){
+			goalVec = RVO::normalize(goalVec);
+		}
+
+		rvoSim->setAgentPrefVelocity(completeObjectList->at(i)->getAgentNum(), goalVec);
+	}
+}
+
+bool Octtree::reachedGoal(ObjectModel* obj){
+	RVO::Vector3 goal = RVO::Vector3(obj->getGoalPos().x, obj->getGoalPos().y, obj->getGoalPos().z);
+
+	if (RVO::absSq(rvoSim->getAgentPosition(obj->getAgentNum()) - goal) > 4.0f*(pow(obj->getBoundingRadius(), 2))){
+		return false;
+	}
+	findNewGoal(obj);
+	return true;
+}
+
+void Octtree::updateSim(){
+	setPrefVelocity();
+	rvoSim->doStep();
+	for (size_t i = 0; i < completeObjectList->size(); i++){
+		if(reachedGoal(completeObjectList->at(i))){
+			
+		}
+		else{
+			XMFLOAT3 posInOb = completeObjectList->at(i)->getBoundingOrigin();
+			RVO::Vector3 posSim = rvoSim->getAgentPosition(completeObjectList->at(i)->getAgentNum());
+			XMFLOAT3 posSimXM = XMFLOAT3(posSim.x(), posSim.y(), posSim.z());
+
+			completeObjectList->at(i)->updateMoveToPos(posSimXM);
 		}
 	}
-
-	return -1;
 }

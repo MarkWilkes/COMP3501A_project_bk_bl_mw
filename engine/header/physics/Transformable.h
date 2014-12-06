@@ -111,12 +111,14 @@ public:
 	void Strafe(float amount); // move left and right
 	void Crane(float amount); // move up and down
 	void Spin(float roll, float pitch, float yaw); // spin the object (tilt, pan)
+	void MoveToPoint(DirectX::XMFLOAT3 pos);
 
 	// Only use if object doesn't have a parent (returns true if is parent)
 	bool MoveIfParent(float amount); // move forward and back (move forward, move backward)
 	bool StrafeIfParent(float amount); // move left and right
 	bool CraneIfParent(float amount); // move up and down
 	bool SpinIfParent(float roll, float pitch, float yaw); // spin the object (tilt, pan)
+	bool MoveToPointIfParent(DirectX::XMFLOAT3 pos);
 	bool hasParent();
 
 	DirectX::XMFLOAT3 getScale() const;

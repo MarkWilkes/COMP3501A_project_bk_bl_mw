@@ -45,6 +45,7 @@
 #include <vector>
 #include <algorithm>
 #include <time.h>
+#include "RVO.h"
 
 using namespace std;
 
@@ -60,6 +61,7 @@ class Octtree{
 		virtual HRESULT update(const DWORD currentTime, const DWORD updateTimeInterval);
 
 	protected:
+		RVO::RVOSimulator *rvoSim;
 		Octnode * rootNode;
 		int maxDepth;
 		vector<ObjectModel *>* completeObjectList;
@@ -73,5 +75,11 @@ class Octtree{
 		int traverseTreeDown(Octnode* node, vector<ObjectModel**>* outcollisions);
 		int checkCollisionsRay(vector<ObjectModel *>* outColliding, XMFLOAT3 posRay, XMFLOAT3 dirRay);
 		int findNewGoal(ObjectModel* mover);
-		int pathObjectToGoal(ObjectModel* mover);
+
+		void setupRVO();
+		void addAsAgent(ObjectModel* newObj);
+		void setPrefVelocity();
+		bool reachedGoal(ObjectModel* obj);
+
+		void updateSim();
 };
