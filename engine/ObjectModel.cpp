@@ -78,17 +78,7 @@ HRESULT ObjectModel::updateContainedTransforms(const DWORD currentTime, const DW
 	for (std::vector<Transformable*>::size_type i = 0; i < tForms->size(); i++){
 		if (type == ObjectType::MineShip){
 			//tForms->at(i)->SpinIfParent(2.0f, 2.0f, 2.0f);
-			/*
-			XMFLOAT4 newDir = XMFLOAT4(moveToPoint.x - getBoundingOrigin().x, 
-				moveToPoint.y - getBoundingOrigin().y,
-				moveToPoint.z - getBoundingOrigin().z, 1.0f);
-			XMVECTOR oriVec = XMLoadFloat4(&tForms->at(i)->getOrientation());
-			XMVECTOR newVec = XMLoadFloat4(&newDir);
-
-			XMVECTOR axis = XMVector3Cross(oriVec, newVec);
-
-			XMVECTOR angle = XMVector3AngleBetweenVectors(oriVec, newVec);
-			*/
+			
 			if (tForms->at(i)->MoveToPointIfParent(moveToPoint)){
 //				float x = 1;
 			}
@@ -98,14 +88,7 @@ HRESULT ObjectModel::updateContainedTransforms(const DWORD currentTime, const DW
 		}
 		if (type == ObjectType::EnemyShip || type == ObjectType::GalleonShip){
 			//spin towards the moveToPoint
-			/*
-			printf("movetoPoint(%f , %f , %f)\n", moveToPoint.x , moveToPoint.y, moveToPoint.z);
-
-			tForms->at(i)->StrafeIfParent(moveToPoint.x + getBoundingOrigin().x);
-			tForms->at(i)->CraneIfParent(moveToPoint.y - getBoundingOrigin().y);
-			tForms->at(i)->MoveIfParent(moveToPoint.z + getBoundingOrigin().z);
-			*/
-
+			
 			tForms->at(i)->MoveToPointIfParent(moveToPoint);
 		}
 		result = ((*tForms)[i])->update(currentTime, updateTimeInterval);

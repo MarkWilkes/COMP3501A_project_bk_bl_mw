@@ -223,68 +223,49 @@ void Transformable::Spin(float roll, float pitch, float yaw) {
 
 void Transformable::MoveToPoint(DirectX::XMFLOAT3 pos){
 	updateTransformProperties();
-	/*
-	float rotX = atan2f(pos.y, pos.z);
-	float rotY = atan2f(- pos.x*cosf(rotX), - abs(pos.z));
-	float rotZ = atan2f(cosf(rotX),sinf(rotX)*sinf(rotY));
-
-	Spin(rotZ,rotX,rotY);
-	*/
-	/*
-	XMVECTOR goalPos = XMLoadFloat3(&pos);
-	XMVECTOR curPos = XMLoadFloat3(&m_position);
-	XMVECTOR upVec = XMLoadFloat3(&m_up);
-
-	XMMATRIX target = XMMatrixLookAtLH(curPos,goalPos,upVec);
-
-	XMVECTOR orientQuat = XMQ
-
-	XMStoreFloat4 (&m_orientation,XMQuaternionRotationMatrix(target));
-	*/
 	
+	XMFLOAT3 forward = XMFLOAT3(0, 0, -1);
+
 	XMFLOAT3 newDir = XMFLOAT3(pos.x - m_position.x,
 		pos.y - m_position.y,
 		pos.z - m_position.z);
-	XMVECTOR forwardVec = XMLoadFloat3(&m_forward);
+	XMVECTOR forwardVec = XMLoadFloat3(&forward);
 	forwardVec = XMVector3Normalize(forwardVec);
 	XMVECTOR newVec = XMLoadFloat3(&newDir);
 	newVec = XMVector3Normalize(newVec);
 
 	XMVECTOR axis = XMVector3Cross(forwardVec, newVec);
-	/*
+	
 	XMVECTOR dotVec = XMVector3Dot(forwardVec, newVec);
 
-	float dotf;
-	XMStoreFloat(&dotf, dotVec);
-
-	XMVECTOR angle = XMVectorACos(XMLoadFloat(&dotf));
-	*/
-
-	XMVECTOR angle = XMVector3AngleBetweenNormals(forwardVec, newVec);
+	//XMVECTOR angle = XMVector3AngleBetweenNormals(newVec,forwardVec);
 
 	float angleF;
-
-	XMStoreFloat(&angleF, angle);
-
+	XMStoreFloat(&angleF, dotVec);
 	XMVECTOR rotq = XMQuaternionRotationAxis(axis, angleF);
 
-	XMStoreFloat4(&m_orientation, XMQuaternionMultiply(forwardVec,rotq));
 
-	float xdif = pos.x - m_position.x;
-	float ydif = pos.y - m_position.y;
-	float zdif = pos.z - m_position.z;
+	XMStoreFloat4(&m_orientation, rotq);
 
-	float xdifSq = xdif*xdif;
-	float ydifSq = ydif*ydif;
-	float zdifSq = zdif*zdif;
+	XMVECTOR ori = XMLoadFloat4(&m_orientation);
 
-	float addedDif = ydifSq + xdifSq + zdifSq;
-	//float sq = sqrt(9.0f);
-	
-	float magniMove = 0;
-	magniMove = sqrtf(addedDif);
+	ori = XMVector4Normalize(ori);
 
-	Move(magniMove);
+	XMStoreFloat4(&m_orientation, ori);
+
+	float xdif(pos.x - m_position.x);
+	float ydif(pos.y - m_position.y);
+	float zdif(pos.z - m_position.z);
+
+	float xdifSq(xdif*xdif);
+	float ydifSq(ydif*ydif);
+	float zdifSq(zdif*zdif);
+
+	float addedDif(ydifSq + xdifSq + zdifSq);
+
+	float magniMove(sqrtf(addedDif));
+
+	Move(0.09f);
 }
 
 bool Transformable::MoveIfParent(float amount)

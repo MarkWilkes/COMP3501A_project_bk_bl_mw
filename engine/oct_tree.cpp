@@ -211,7 +211,7 @@ int Octtree::findNewGoal(ObjectModel* obj){
 	if (obj->type != ObjectType::Other){
 		//TODO
 		//obj->updateGoalPos(obj->getBoundingOrigin());
-		srand((unsigned int)time(NULL));
+		//srand((unsigned int)time(NULL));
 		//obj->updateGoalPos(XMFLOAT3((float)(rand() % 100) - 50, (float)(rand() % 100) - 50, (float)(rand() % 100) - 50));
 		obj->updateGoalPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	}
@@ -228,7 +228,7 @@ void Octtree::setupRVO(){
 
 	rvoSim->setTimeStep(0.125f);
 
-	rvoSim->setAgentDefaults(20.0f, 10, 1.5f, 1.0f, 5.0f);
+	rvoSim->setAgentDefaults(20.0f, 10, 0.5f, 1.0f, 5.0f);
 }
 
 void Octtree::addAsAgent(ObjectModel* newObject){
