@@ -138,6 +138,11 @@ The following works were consulted for ideas during development:
   - Retrieved November 26, 2014
   - Usage terms: Permissive (http://www.nasa.gov/audience/formedia/features/MP_Photo_Guidelines.html#.VEQBixaDbfc)
 
+- "RVO2 Library: Reciprocal Collision Avoidance for Real-Time Multi-Agent Simulation"  ('RVO2-3D')
+	- Downloaded from http://gamma.cs.unc.edu/RVO2/downloads/
+	- Credit: Department of Computer Science, University of North Carolina at Chapel Hill
+	- Retrieved December 1, 2014
+	- Usage terms: Permissive (http://gamma.cs.unc.edu/RVO2/downloads/)
 ### Textures used by test code only
 
 - "King Fire in California, False-Color Infrared" (`textures\test\kingfire_oli_2014262_swir_lrg.jpg`)
