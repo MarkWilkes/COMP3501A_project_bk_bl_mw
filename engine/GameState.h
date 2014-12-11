@@ -14,6 +14,8 @@
 #include "oct_tree.h"
 #include "GridSphereTextured.h"
 #include "ShipModel.h"
+#include "MineShipModel.h"
+#include "GalleonShipModel.h"
 #include "FlatAtomicConfigIO.h"
 
 // Logging message prefix
@@ -83,6 +85,10 @@ private:
 
 	ShipModel* m_ship;
 
+	MineShipModel * m_mine;
+
+	GalleonShipModel * m_galleon;
+
 	// spawn grid of asteroids or not
 	bool m_bSpawnGrid;
 
@@ -132,6 +138,9 @@ protected:
 
 	virtual HRESULT initializeShip(ID3D11Device* d3dDevice);
 
+	virtual HRESULT initializeMine(ID3D11Device* device);
+
+	virtual HRESULT initializeGalleon(ID3D11Device* device);
 	// Octree setup helpers
 protected:
 	/* For first-time setup */
@@ -142,9 +151,15 @@ protected:
 
 	/* Adds asteroids to the octree */
 	virtual HRESULT spawnAsteroidsGrid(const size_t x, const size_t y, const size_t z);
-	
-	virtual HRESULT spawnShip();
 
+	/* Adds a ship to the octree */
+	virtual HRESULT spawnPlayerShip();
+
+	virtual HRESULT spawnEnemyShip();
+
+	virtual HRESULT spawnMine();
+
+	virtual HRESULT spawnGalleon();
 	// Particle system API (implemented in a derived class)
 	/* Do not use these functions if the GameStateWithParticles
 	   class has been configured to be in demo mode,
@@ -159,6 +174,9 @@ protected:
 
 	/* Adds a jet with the given transformation */
 	virtual HRESULT spawnJet(Transformable* const transform) = 0;
+
+	/* Adds a laser with the given endpoints */
+	virtual HRESULT spawnLaser(Transformable* const start, Transformable* const end) = 0;
 
 	/* Removes all explosions with the transformation at the given
 	   memory location.
@@ -175,4 +193,14 @@ protected:
 	   when they reach the end of their lives.
 	*/
 	virtual HRESULT removeJet(Transformable* const transform) = 0;
+
+	/* Removes all laser beams with the transformation at the given
+	   memory location.
+	   Call this function only to remove a laser early.
+	   GameStateWithParticles will automatically delete lasers
+	   when they reach the end of their lives.
+	   (However, as currently configured by the configuration text file,
+	    the laser beam has an infinite life - November 27, 2014)
+	 */
+	virtual HRESULT removeLaser(Transformable* const startTransform) = 0;
 };
