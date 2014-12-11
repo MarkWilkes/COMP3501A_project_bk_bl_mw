@@ -41,7 +41,7 @@ ShipModel::ShipModel()
 	rightWing = new CubeModel(wingTransform,
 							  1.0f, 0.75f, 3.0f, 0);
 
-	cube = new GridCubeTextured(XMFLOAT3(2.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0, 0.0f, 0.0f, 1.0f), 0);
+	cube = new GridCubeTextured(XMFLOAT3(2.0f, 2.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0, 0.0f, 0.0f, 1.0f), 0);
 }
 
 ShipModel::~ShipModel(void) 

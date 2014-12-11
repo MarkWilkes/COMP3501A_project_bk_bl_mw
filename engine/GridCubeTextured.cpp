@@ -58,6 +58,10 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	XMFLOAT4 cornerOrientations[6][GRIDCUBETEXTURED_NQUADBONES];
 	Transformable* angledTransforms[6];
 
+	float xs = m_rootTransform->getScale().x;
+	float ys = m_rootTransform->getScale().y;
+	float zs = m_rootTransform->getScale().z;
+
 	// top face
 	XMVECTOR oriVec = XMQuaternionRotationRollPitchYaw(XM_PI / 2.0f, 0.0f, 0.0f);
 	XMFLOAT4 newOri = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -67,6 +71,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 											newOri);
 	angledTransforms[0]->setParent(m_rootTransform);
 
+	cornerPositions[0][0] = XMFLOAT3(1.0f * xs, 1.0f * zs, -1.0f * ys);
+	cornerPositions[0][1] = XMFLOAT3(-1.0f * xs, 1.0f * zs, -1.0f * ys);
+	cornerPositions[0][2] = XMFLOAT3(-1.0f * xs, -1.0f * zs, -1.0f * ys);
+	cornerPositions[0][3] = XMFLOAT3(1.0f * xs, -1.0f * zs, -1.0f * ys);
+
 	// bottom face
 	oriVec = XMQuaternionRotationRollPitchYaw(-XM_PI / 2.0f, 0.0f, 0.0f);
 	XMStoreFloat4(&newOri, oriVec);
@@ -74,6 +83,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 		m_rootTransform->getPosition(),
 		newOri);
 	angledTransforms[1]->setParent(m_rootTransform);
+
+	cornerPositions[1][0] = XMFLOAT3(1.0f * xs, 1.0f * zs, -1.0f * ys);
+	cornerPositions[1][1] = XMFLOAT3(-1.0f * xs, 1.0f * zs, -1.0f * ys);
+	cornerPositions[1][2] = XMFLOAT3(-1.0f * xs, -1.0f * zs, -1.0f * ys);
+	cornerPositions[1][3] = XMFLOAT3(1.0f * xs, -1.0f * zs, -1.0f * ys);
 
 	// left face
 	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, -XM_PI / 2.0f, 0.0f);
@@ -83,6 +97,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 		newOri);
 	angledTransforms[2]->setParent(m_rootTransform);
 
+	cornerPositions[2][0] = XMFLOAT3(1.0f * zs, 1.0f * ys, -1.0f * xs);
+	cornerPositions[2][1] = XMFLOAT3(-1.0f * zs, 1.0f * ys, -1.0f * xs);
+	cornerPositions[2][2] = XMFLOAT3(-1.0f * zs, -1.0f * ys, -1.0f * xs);
+	cornerPositions[2][3] = XMFLOAT3(1.0f * zs, -1.0f * ys, -1.0f * xs);
+
 	// right face
 	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, XM_PI / 2.0f, 0.0f);
 	XMStoreFloat4(&newOri, oriVec);
@@ -90,6 +109,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 		m_rootTransform->getPosition(),
 		newOri);
 	angledTransforms[3]->setParent(m_rootTransform);
+
+	cornerPositions[3][0] = XMFLOAT3(1.0f * zs, 1.0f * ys, -1.0f * xs);
+	cornerPositions[3][1] = XMFLOAT3(-1.0f * zs, 1.0f * ys, -1.0f * xs);
+	cornerPositions[3][2] = XMFLOAT3(-1.0f * zs, -1.0f * ys, -1.0f * xs);
+	cornerPositions[3][3] = XMFLOAT3(1.0f * zs, -1.0f * ys, -1.0f * xs);
 
 	// front face
 	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
@@ -99,6 +123,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 		newOri);
 	angledTransforms[4]->setParent(m_rootTransform);
 
+	cornerPositions[4][0] = XMFLOAT3(1.0f * xs, 1.0f * ys, -1.0f * zs);
+	cornerPositions[4][1] = XMFLOAT3(-1.0f * xs, 1.0f * ys, -1.0f * zs);
+	cornerPositions[4][2] = XMFLOAT3(-1.0f * xs, -1.0f * ys, -1.0f * zs);
+	cornerPositions[4][3] = XMFLOAT3(1.0f * xs, -1.0f * ys, -1.0f * zs);
+
 	// back face
 	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, XM_PI, 0.0f);
 	XMStoreFloat4(&newOri, oriVec);
@@ -107,19 +136,16 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 		newOri);
 	angledTransforms[5]->setParent(m_rootTransform);
 
+	cornerPositions[5][0] = XMFLOAT3(1.0f * xs, 1.0f * ys, -1.0f * zs);
+	cornerPositions[5][1] = XMFLOAT3(-1.0f * xs, 1.0f * ys, -1.0f * zs);
+	cornerPositions[5][2] = XMFLOAT3(-1.0f * xs, -1.0f * ys, -1.0f * zs);
+	cornerPositions[5][3] = XMFLOAT3(1.0f * xs, -1.0f * ys, -1.0f * zs);
+
 
 	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
 	XMStoreFloat4(&newOri, oriVec);
 
-	//float xs = m_rootTransform->getScale().x;
-	//float ys = m_rootTransform->getScale().y;
-	//float zs = m_rootTransform->getScale().z;
-
 	for (int i = 0; i < 6; ++i) {
-		cornerPositions[i][0] = XMFLOAT3(1.0f, 1.0f, -1.0f);
-		cornerPositions[i][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
-		cornerPositions[i][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
-		cornerPositions[i][3] = XMFLOAT3(1.0f, -1.0f, -1.0f);
 
 		for (int k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
 			cornerScales[i][k] = XMFLOAT3(1.0f, 1.0f, 1.0f);
