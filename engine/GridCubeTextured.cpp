@@ -15,7 +15,7 @@ GridCubeTextured::GridCubeTextured(XMFLOAT3 scale, XMFLOAT3 position, XMFLOAT4 o
  : IGeometry(), LogUser(true, GRIDCUBETEXTURED_START_MSG_PREFIX),
  m_rootTransform(0)
 {
-	m_rootTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	m_rootTransform = new Transformable(scale, position, orientation);
 }
 
 
@@ -56,56 +56,84 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	XMFLOAT3 cornerPositions[6][GRIDCUBETEXTURED_NQUADBONES];
 	XMFLOAT3 cornerScales[6][GRIDCUBETEXTURED_NQUADBONES];
 	XMFLOAT4 cornerOrientations[6][GRIDCUBETEXTURED_NQUADBONES];
+	Transformable* angledTransforms[6];
 
 	// top face
-	cornerPositions[0][0] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
-	cornerPositions[0][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
-	cornerPositions[0][2] = XMFLOAT3(1.0f, 1.0f, -1.0f);
-	cornerPositions[0][3] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	XMVECTOR oriVec = XMQuaternionRotationRollPitchYaw(XM_PI / 2.0f, 0.0f, 0.0f);
+	XMFLOAT4 newOri = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[0] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), 
+											m_rootTransform->getPosition(), 
+											newOri);
+	angledTransforms[0]->setParent(m_rootTransform);
 
 	// bottom face
-	cornerPositions[1][0] = XMFLOAT3(1.0f, -1.0f, 1.0f);
-	cornerPositions[1][1] = XMFLOAT3(1.0f, -1.0f, -1.0f);
-	cornerPositions[1][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
-	cornerPositions[1][3] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
+	oriVec = XMQuaternionRotationRollPitchYaw(-XM_PI / 2.0f, 0.0f, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[1] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
+		m_rootTransform->getPosition(),
+		newOri);
+	angledTransforms[1]->setParent(m_rootTransform);
 
 	// left face
-	cornerPositions[2][0] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
-	cornerPositions[2][1] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
-	cornerPositions[2][2] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
-	cornerPositions[2][3] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, -XM_PI / 2.0f, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[2] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
+		m_rootTransform->getPosition(),
+		newOri);
+	angledTransforms[2]->setParent(m_rootTransform);
 
 	// right face
-	cornerPositions[3][0] = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	cornerPositions[3][1] = XMFLOAT3(1.0f, 1.0f, -1.0f);
-	cornerPositions[3][2] = XMFLOAT3(1.0f, -1.0f, -1.0f);
-	cornerPositions[3][3] = XMFLOAT3(1.0f, -1.0f, 1.0f);
+	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, XM_PI / 2.0f, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[3] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
+		m_rootTransform->getPosition(),
+		newOri);
+	angledTransforms[3]->setParent(m_rootTransform);
 
 	// front face
-	cornerPositions[4][0] = XMFLOAT3(1.0f, 1.0f, -1.0f);
-	cornerPositions[4][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
-	cornerPositions[4][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
-	cornerPositions[4][3] = XMFLOAT3(1.0f, -1.0f, -1.0f);
+	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[4] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
+		m_rootTransform->getPosition(),
+		newOri);
+	angledTransforms[4]->setParent(m_rootTransform);
 
 	// back face
-	cornerPositions[5][0] = XMFLOAT3(1.0f, -1.0f, 1.0f);
-	cornerPositions[5][1] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
-	cornerPositions[5][2] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
-	cornerPositions[5][3] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, XM_PI, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+	angledTransforms[5] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
+		m_rootTransform->getPosition(),
+		newOri);
+	angledTransforms[5]->setParent(m_rootTransform);
+
+
+	oriVec = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
+	XMStoreFloat4(&newOri, oriVec);
+
+	//float xs = m_rootTransform->getScale().x;
+	//float ys = m_rootTransform->getScale().y;
+	//float zs = m_rootTransform->getScale().z;
 
 	for (int i = 0; i < 6; ++i) {
+		cornerPositions[i][0] = XMFLOAT3(1.0f, 1.0f, -1.0f);
+		cornerPositions[i][1] = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+		cornerPositions[i][2] = XMFLOAT3(-1.0f, -1.0f, -1.0f);
+		cornerPositions[i][3] = XMFLOAT3(1.0f, -1.0f, -1.0f);
+
 		for (int k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
-			cornerScales[i][k] = m_rootTransform->getScale();
-			cornerOrientations[i][k] = m_rootTransform->getOrientation();
+			cornerScales[i][k] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+			cornerOrientations[i][k] = newOri;
 		}
 	}
 
 	m_allQuadBones = new std::vector<Transformable*>();
 	for (int i = 0; i < 6; ++i) {
 		m_quadBones[i] = new std::vector<Transformable*>();
+		m_allQuadBones->push_back(angledTransforms[i]);
 		for (size_t k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
 			Transformable* newTransform = new Transformable(cornerScales[i][k], cornerPositions[i][k], cornerOrientations[i][k]);
-			newTransform->setParent(m_rootTransform);
+			newTransform->setParent(angledTransforms[i]);
 			m_quadBones[i]->push_back(newTransform);
 			m_allQuadBones->push_back(newTransform);
 		}
