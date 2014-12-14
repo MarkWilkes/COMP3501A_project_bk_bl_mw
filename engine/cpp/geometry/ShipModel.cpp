@@ -46,11 +46,6 @@ ShipModel::~ShipModel(void)
 		delete rightWing;
 		rightWing = 0;
 	}
-
-	if (cube != 0) {
-		delete cube;
-		cube = 0;
-	}
 }
 
 HRESULT ShipModel::initialize(ID3D11Device* d3dDevice, vector<Transformable*>* bones)
@@ -66,15 +61,15 @@ HRESULT ShipModel::initialize(ID3D11Device* d3dDevice, vector<Transformable*>* b
 	m_bones = bones;
 
 	//rootTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	body = new CubeModel(m_bones->at(0),
-		1.0f, 0.75f, 4.0f, 0);
+	body = new GridCubeTextured(m_bones->at(0));
+		//1.0f, 0.75f, 4.0f, 0);
 	//Transformable* wingTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
-	leftWing = new CubeModel(m_bones->at(1),
-		1.0f, 0.75f, 3.0f, 0);
+	leftWing = new GridCubeTextured(m_bones->at(1));
+		//1.0f, 0.75f, 3.0f, 0);
 
 	//wingTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
-	rightWing = new CubeModel(m_bones->at(2),
-		1.0f, 0.75f, 3.0f, 0);
+	rightWing = new GridCubeTextured(m_bones->at(2));
+		//1.0f, 0.75f, 3.0f, 0);
 
 	if (FAILED(body->initialize(d3dDevice))) {
 		logMessage(L"Failed to initialize CubeModel object.");
@@ -134,10 +129,6 @@ HRESULT ShipModel::drawUsingAppropriateRenderer(
 	}
 	if (FAILED(rightWing->drawUsingAppropriateRenderer(context, manager, camera))) {
 		logMessage(L"Failed to draw CubeModel object.");
-		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
-	}
-	if (FAILED(cube->drawUsingAppropriateRenderer(context, manager, camera))) {
-		logMessage(L"Failed to draw GridCubeModel object.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 

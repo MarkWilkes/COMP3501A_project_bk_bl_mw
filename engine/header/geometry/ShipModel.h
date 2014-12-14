@@ -24,7 +24,6 @@ Description
 
 #include <DirectXMath.h>
 #include "Transformable.h"
-#include "CubeModel.h"
 #include "../../engine/GridCubeTextured.h"
 #include "LogUser.h"
 #include "../../oct_tree.h"
@@ -72,11 +71,9 @@ public:
 	virtual XMFLOAT3 getPosition() override;
 	virtual float getRadius() override;
 private:
-	CubeModel* body;
-	CubeModel* leftWing;
-	CubeModel* rightWing;
-
-	GridCubeTextured* cube;
+	GridCubeTextured* body;
+	GridCubeTextured* leftWing;
+	GridCubeTextured* rightWing;
 
 	ShipModel(const ShipModel& other);
 	ShipModel& operator=(const ShipModel& other);

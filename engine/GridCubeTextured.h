@@ -52,7 +52,7 @@ class GridCubeTextured : public IGeometry, public LogUser
 	// Initialization and destruction
 public:
 
-	GridCubeTextured(XMFLOAT3 scale, XMFLOAT3 position, XMFLOAT4 orientation, XMFLOAT4 * pColors);
+	GridCubeTextured(Transformable* transform);
 	virtual ~GridCubeTextured(void);
 
 	HRESULT spawn(Octtree*);

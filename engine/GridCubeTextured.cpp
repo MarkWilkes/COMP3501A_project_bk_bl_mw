@@ -11,11 +11,10 @@ using std::wstring;
 
 #define GRIDCUBETEXTURED_NQUADBONES 4
 
-GridCubeTextured::GridCubeTextured(XMFLOAT3 scale, XMFLOAT3 position, XMFLOAT4 orientation, XMFLOAT4 * pColors)
+GridCubeTextured::GridCubeTextured(Transformable* transform)
  : IGeometry(), LogUser(true, GRIDCUBETEXTURED_START_MSG_PREFIX),
- m_rootTransform(0)
+ m_rootTransform(transform)
 {
-	m_rootTransform = new Transformable(scale, position, orientation);
 }
 
 
@@ -156,7 +155,7 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	m_allQuadBones = new std::vector<Transformable*>();
 	for (int i = 0; i < 6; ++i) {
 		m_quadBones[i] = new std::vector<Transformable*>();
-		m_allQuadBones->push_back(angledTransforms[i]);
+		//m_allQuadBones->push_back(angledTransforms[i]);
 		for (size_t k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
 			Transformable* newTransform = new Transformable(cornerScales[i][k], cornerPositions[i][k], cornerOrientations[i][k]);
 			newTransform->setParent(angledTransforms[i]);

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cpp\physics\HomingTransformable.cpp" />
+    <ClCompile Include="cpp\physics\HomingSpline.cpp" />
     <ClCompile Include="cpp\physics\BasicSpline.cpp" />
     <ClCompile Include="cpp\physics\WanderingLineSpline.cpp" />
     <ClCompile Include="cpp\geometry\UniformRandomSplineModel.cpp" />
@@ -72,6 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GridCubeTextured.h" />
+    <ClInclude Include="header\physics\HomingTransformable.h" />
+    <ClInclude Include="header\physics\HomingSpline.h" />
     <ClInclude Include="header\geometry\UniformRandomSplineModel.h" />
     <ClInclude Include="header\physics\BasicSpline.h" />
     <ClInclude Include="header\physics\WanderingLineSpline.h" />
