@@ -87,6 +87,7 @@ private:
 	std::vector<Transformable*>* m_quadBones[6];
 	std::vector<Transformable*>* m_quadBones_shared[6];
 	std::vector<Transformable*>* m_allQuadBones;
+	Transformable* angledTransforms[6];
 
 	GridCubeTextured(const GridCubeTextured& other);
 	GridCubeTextured& operator=(const GridCubeTextured& other);

@@ -13,8 +13,9 @@ using std::wstring;
 
 GridCubeTextured::GridCubeTextured(Transformable* transform)
  : IGeometry(), LogUser(true, GRIDCUBETEXTURED_START_MSG_PREFIX),
- m_rootTransform(transform)
+ m_rootTransform(0)
 {
+	m_rootTransform = new Transformable(transform->getScale(), transform->getPosition(), transform->getOrientation());
 }
 
 
@@ -52,10 +53,11 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	5 - back face
 	*/
 
+	m_allQuadBones->push_back(m_rootTransform);
+
 	XMFLOAT3 cornerPositions[6][GRIDCUBETEXTURED_NQUADBONES];
 	XMFLOAT3 cornerScales[6][GRIDCUBETEXTURED_NQUADBONES];
 	XMFLOAT4 cornerOrientations[6][GRIDCUBETEXTURED_NQUADBONES];
-	Transformable* angledTransforms[6];
 
 	float xs = m_rootTransform->getScale().x;
 	float ys = m_rootTransform->getScale().y;
@@ -68,7 +70,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[0] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), 
 											m_rootTransform->getPosition(), 
 											newOri);
-	angledTransforms[0]->setParent(m_rootTransform);
 
 	cornerPositions[0][0] = XMFLOAT3(1.0f * xs, 1.0f * zs, -1.0f * ys);
 	cornerPositions[0][1] = XMFLOAT3(-1.0f * xs, 1.0f * zs, -1.0f * ys);
@@ -81,7 +82,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[1] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
 		m_rootTransform->getPosition(),
 		newOri);
-	angledTransforms[1]->setParent(m_rootTransform);
 
 	cornerPositions[1][0] = XMFLOAT3(1.0f * xs, 1.0f * zs, -1.0f * ys);
 	cornerPositions[1][1] = XMFLOAT3(-1.0f * xs, 1.0f * zs, -1.0f * ys);
@@ -94,7 +94,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[2] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
 		m_rootTransform->getPosition(),
 		newOri);
-	angledTransforms[2]->setParent(m_rootTransform);
 
 	cornerPositions[2][0] = XMFLOAT3(1.0f * zs, 1.0f * ys, -1.0f * xs);
 	cornerPositions[2][1] = XMFLOAT3(-1.0f * zs, 1.0f * ys, -1.0f * xs);
@@ -107,7 +106,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[3] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
 		m_rootTransform->getPosition(),
 		newOri);
-	angledTransforms[3]->setParent(m_rootTransform);
 
 	cornerPositions[3][0] = XMFLOAT3(1.0f * zs, 1.0f * ys, -1.0f * xs);
 	cornerPositions[3][1] = XMFLOAT3(-1.0f * zs, 1.0f * ys, -1.0f * xs);
@@ -120,7 +118,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[4] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
 		m_rootTransform->getPosition(),
 		newOri);
-	angledTransforms[4]->setParent(m_rootTransform);
 
 	cornerPositions[4][0] = XMFLOAT3(1.0f * xs, 1.0f * ys, -1.0f * zs);
 	cornerPositions[4][1] = XMFLOAT3(-1.0f * xs, 1.0f * ys, -1.0f * zs);
@@ -133,7 +130,6 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	angledTransforms[5] = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f),
 		m_rootTransform->getPosition(),
 		newOri);
-	angledTransforms[5]->setParent(m_rootTransform);
 
 	cornerPositions[5][0] = XMFLOAT3(1.0f * xs, 1.0f * ys, -1.0f * zs);
 	cornerPositions[5][1] = XMFLOAT3(-1.0f * xs, 1.0f * ys, -1.0f * zs);
@@ -145,7 +141,7 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	XMStoreFloat4(&newOri, oriVec);
 
 	for (int i = 0; i < 6; ++i) {
-
+		angledTransforms[i]->setParent(m_rootTransform);
 		for (int k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
 			cornerScales[i][k] = XMFLOAT3(1.0f, 1.0f, 1.0f);
 			cornerOrientations[i][k] = newOri;
@@ -155,7 +151,7 @@ HRESULT GridCubeTextured::initialize(ID3D11Device* d3dDevice)
 	m_allQuadBones = new std::vector<Transformable*>();
 	for (int i = 0; i < 6; ++i) {
 		m_quadBones[i] = new std::vector<Transformable*>();
-		//m_allQuadBones->push_back(angledTransforms[i]);
+		m_allQuadBones->push_back(angledTransforms[i]);
 		for (size_t k = 0; k < GRIDCUBETEXTURED_NQUADBONES; ++k) {
 			Transformable* newTransform = new Transformable(cornerScales[i][k], cornerPositions[i][k], cornerOrientations[i][k]);
 			newTransform->setParent(angledTransforms[i]);
@@ -236,6 +232,7 @@ HRESULT GridCubeTextured::drawUsingAppropriateRenderer(
 
 HRESULT GridCubeTextured::setTransformables(const std::vector<Transformable*>* const transforms)
 {
+	//setParentTransformable(transforms->at(0));
 	for (int i = 0; i < 6; ++i) {
 		if (FAILED(m_gridQuadList[i]->setTransformables(transforms))) {
 			logMessage(L"Failed to set GridCubeTextured object transforms.");

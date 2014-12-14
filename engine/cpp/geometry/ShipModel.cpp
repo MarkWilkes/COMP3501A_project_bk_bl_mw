@@ -187,3 +187,19 @@ float ShipModel::getRadius()
 {
 	return 2.0f;
 }
+
+std::vector<Transformable*>* ShipModel::getTransformables()
+{
+	std::vector<Transformable*>* tList = new std::vector<Transformable*>();
+
+	std::vector<Transformable*>* partList = body->getTransformables();
+	tList->insert(tList->end(), partList->begin(), partList->end());
+
+	partList = leftWing->getTransformables();
+	tList->insert(tList->end(), partList->begin(), partList->end());
+
+	partList = rightWing->getTransformables();
+	tList->insert(tList->end(), partList->begin(), partList->end());
+
+	return tList;
+}

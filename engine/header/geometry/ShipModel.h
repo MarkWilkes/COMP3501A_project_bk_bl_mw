@@ -70,6 +70,7 @@ public:
 	virtual HRESULT setTransformables(const std::vector<Transformable*>* const transforms) override;
 	virtual XMFLOAT3 getPosition() override;
 	virtual float getRadius() override;
+	std::vector<Transformable*>* getTransformables();
 private:
 	GridCubeTextured* body;
 	GridCubeTextured* leftWing;

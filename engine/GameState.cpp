@@ -629,6 +629,11 @@ HRESULT GameState::spawnPlayerShip()
 	bone->setParent(parent);
 	newObject->addTransformable(bone);
 
+	std::vector<Transformable*>* tList = m_ship->getTransformables();
+	for (int i = 0; i < tList->size(); ++i) {
+		newObject->addTransformable(tList->at(i));
+	}
+
 	if (m_tree->addObject(newObject) == -1){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
