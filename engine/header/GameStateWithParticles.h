@@ -264,6 +264,8 @@ private:
 
 	// The model for all jets
 	RandomBurstCone* m_jetModel;
+	bool			 m_rocketWeaponExpired;
+	Transformable*   m_weaponRocketTransform;
 
 	// Keeps track of the positions at which to render jets
 	std::vector<ActiveParticles<RandomBurstCone>*>* m_jets;

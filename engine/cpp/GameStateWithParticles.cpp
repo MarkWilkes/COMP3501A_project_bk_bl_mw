@@ -67,7 +67,8 @@ m_demo_nExplosions(GAMESTATEWITHPARTICLES_DEMO_NEXPLOSIONS_DEFAULT),
 m_demo_zoneRadius(GAMESTATEWITHPARTICLES_DEMO_SHOWAREA_DEFAULT),
 m_demoStart(0), m_demoEnd(0),
 m_weaponMode(WEAPON_LASER),
-m_weaponLaserStart(0), m_weaponLaserEnd(0), m_laserWeaponExpired(true)
+m_weaponLaserStart(0), m_weaponLaserEnd(0), m_laserWeaponExpired(true),
+m_weaponRocketTransform(0), m_rocketWeaponExpired(true)
 {
 	if( configureNow ) {
 		if( FAILED(configure()) ) {
@@ -326,6 +327,18 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 				}
 			}
 		}
+		if (isExpired) {
+			vector<ActiveParticles<RandomBurstCone>*>::iterator it = m_jets->begin();
+			while (it != m_jets->end()){
+				delete(*it);
+				it = m_jets->erase(it);
+			}
+
+			//if (m_weaponRocketTransform != 0) delete m_weaponRocketTransform;
+			m_weaponRocketTransform = 0;
+
+			m_rocketWeaponExpired = true;
+		}
 	}
 
 	// Update all lasers
@@ -365,7 +378,6 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 				delete(*it);
 				it = m_lasers->erase(it);
 			}
-			//m_lasers->clear();
 			if (m_weaponLaserStart) delete m_weaponLaserStart;
 			if (m_weaponLaserEnd) delete m_weaponLaserEnd;
 			m_weaponLaserStart = 0;
@@ -425,19 +437,21 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 
 	if (mouse.IsPressed(Mouse::LEFT)) {
 		if (m_weaponLaserStart == 0 && m_weaponLaserEnd == 0) {
-			XMFLOAT3 ship_pos = m_shipTransform->getPosition();
 			XMFLOAT3 ship_forward = m_shipTransform->getForwardLocalDirection();
 			m_weaponLaserStart = new Transformable(
 				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
-				XMFLOAT3(ship_pos.x, ship_pos.y, ship_pos.z + 2), // Position
+				XMFLOAT3(0.0f, 0.0f, 0.0f), // Position
 				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
 				);
 
 			m_weaponLaserEnd = new Transformable(
 				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
-				XMFLOAT3(ship_forward.x * 10, ship_forward.y * 10, ship_forward.z * 10), // Position
+				XMFLOAT3(ship_forward.x * 30, ship_forward.y * 30, ship_forward.z * 30), // Position
 				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
 				);
+
+			m_weaponLaserStart->setParent(m_shipTransform);
+			m_weaponLaserEnd->setParent(m_shipTransform);
 
 			if( FAILED(spawnLaser(m_weaponLaserStart, m_weaponLaserEnd)) ) {
 				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
@@ -445,17 +459,29 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 		}
 	}
 	else if (mouse.IsPressed(Mouse::RIGHT)) {
+		if (m_rocketWeaponExpired && m_weaponRocketTransform == 0) {
+			m_rocketWeaponExpired = false;
+			m_weaponRocketTransform = new Transformable(
+				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+				XMFLOAT3(0.0f, 0.0f, 0.0f), // Position
+				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				);
 
+			m_weaponRocketTransform->setParent(m_shipTransform);
+
+			if (FAILED(spawnJet(m_weaponRocketTransform))) {
+				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+			}
+		}
 	}
 	else if (mouse.IsPressed(Mouse::MIDDLE)) {
 
 	}
 
-
-	HRESULT result = ERROR_SUCCESS;
 	if (mouse.IsPressed(Mouse::LEFT) == false) {
 		m_laserWeaponExpired = true;
 	}
+
 
 	return ERROR_SUCCESS;
 }
@@ -1084,7 +1110,7 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 	}
 
 	if( m_jets->size() < GAMESTATEWITHPARTICLES_DEMO_NJETS ) {
-
+		/*
 		transform = new Transformable(
 			XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
 			XMFLOAT3( -5.0f, 5.0f, 10.0f), // Position
@@ -1100,6 +1126,7 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 			m_currentTime,
 			XMFLOAT3(1.0f, 1.0f, 1.0f))
 			);
+			*/
 	}
 
 	if( m_lasers->size() < GAMESTATEWITHPARTICLES_DEMO_NLASERS ) {
