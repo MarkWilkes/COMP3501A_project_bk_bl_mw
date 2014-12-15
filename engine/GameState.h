@@ -74,6 +74,9 @@
 #define GAMESTATE_GALLEON_LIFE_FIELD L"nGalleonLife"
 #define GAMESTATE_GALLEON_LIFE_DEFAULT 5
 
+#define GAMESTATE_SHIP_ENEMY_NUM_FEILD L"nEnemyShipNum"
+#define GAMESTATE_SHIP_ENEMY_NUM_DEFAULT 10
+
 
 
 // LogUser and ConfigUser configuration parameters
@@ -117,6 +120,7 @@ private:
 	double m_asteroidGridSpacing;
 	size_t m_nAsteroidsX, m_nAsteroidsY, m_nAsteroidsZ;
 	int m_asteroidLife, m_mineLife, m_ShipPlayerLife, m_ShipEnemyLife, m_GalleonLife;
+	int m_nEShip;
 
 public:
 	/* 'configureNow' allows derived classes to postpone configuration
@@ -173,7 +177,7 @@ protected:
 	/* Adds a ship to the octree */
 	virtual HRESULT spawnPlayerShip();
 
-	virtual HRESULT spawnEnemyShip();
+	virtual HRESULT spawnEnemyShip(const size_t n);
 
 	virtual HRESULT spawnMine();
 

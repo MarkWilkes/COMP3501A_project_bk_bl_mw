@@ -228,19 +228,42 @@ HRESULT Octtree::update(const DWORD currentTime, const DWORD updateTimeInterval)
 	}
 	if (ticksForCollision == 1){
 		trimTree();
-
+		/*
 		vector<ObjectModel*>::iterator curr = completeObjectList->begin();
-		while (curr != completeObjectList->end()){
+		vector<ObjectModel*>::iterator end = completeObjectList->end();
+		while (curr != end){
 			if ((*curr)->isDead()){
 				size_t agentNum = (unsigned int)(*curr)->getAgentNum();
 				rvoSim->setAgentPosition(agentNum, RVO::Vector3(0, 0, 0));
 				rvoSim->setAgentRadius(agentNum, 0);
 				rvoSim->setAgentPrefVelocity(agentNum, RVO::Vector3(0, 0, 0));
-				delete (*curr);
+				ObjectModel* del = (*curr);
 				curr = completeObjectList->erase(curr);
+				delete del;
 			}
 			else{
 				curr++;
+			}
+		}
+		*/
+		bool foundDead(true);
+		ObjectModel* del(0);
+		while (foundDead){
+			foundDead = false;
+			for (size_t i = 0; i < completeObjectList->size(); i++){
+				if (completeObjectList->at(i)->isDead()){
+					foundDead = true;
+					size_t agentNum = (unsigned int)completeObjectList->at(i)->getAgentNum();
+					rvoSim->setAgentPosition(agentNum, RVO::Vector3(0, 0, 0));
+					rvoSim->setAgentRadius(agentNum, 0);
+					rvoSim->setAgentPrefVelocity(agentNum, RVO::Vector3(0, 0, 0));
+					del = completeObjectList->at(i);
+					completeObjectList->erase(completeObjectList->begin()+i);
+					break;
+				}
+			}
+			if (foundDead){
+				delete del;
 			}
 		}
 	}
@@ -316,13 +339,22 @@ int Octtree::findNewGoal(ObjectModel* obj){
 		return 0;
 	}
 	else if (obj->type == ObjectType::MineShip){
-		//TODO
 		obj->updateGoalPos(XMFLOAT3((float)(rand() % 100) - 50, (float)(rand() % 100) - 50, (float)(rand() % 100) - 50));
 		return 0;
 	}
 	else if (obj->type == ObjectType::EnemyShip){
-		//TODO
-		obj->updateGoalPos(XMFLOAT3((float)(rand() % 100) - 50, (float)(rand() % 100) - 50, (float)(rand() % 100) - 50));
+		XMVECTOR player = XMLoadFloat3(&playerObj->getBoundingOrigin());
+		XMVECTOR pos = XMLoadFloat3(&obj->getBoundingOrigin());
+
+		XMVECTOR dist = XMVector3Length(XMVectorSubtract(player, pos));
+		float distF;
+		XMStoreFloat(&distF,dist);
+		if (distF < (obj->getBoundingRadius() * 20)){
+			obj->updateGoalPos(playerObj->getBoundingOrigin());
+		}
+		else{
+			obj->updateGoalPos(XMFLOAT3((float)(rand() % 100) - 50, (float)(rand() % 100) - 50, (float)(rand() % 100) - 50));
+		}
 		return 0;
 	}
 

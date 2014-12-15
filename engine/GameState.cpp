@@ -133,6 +133,8 @@ HRESULT GameState::configure(void) {
 	int nShipEnemyLife = GAMESTATE_SHIP_ENEMY_LIFE_DEFAULT;
 	int nGalleonLife = GAMESTATE_GALLEON_LIFE_DEFAULT;
 
+	int nShipEnemyNum = GAMESTATE_SHIP_ENEMY_NUM_DEFAULT;
+
 	if (hasConfigToUse()) {
 
 		// Configure base members
@@ -212,6 +214,10 @@ HRESULT GameState::configure(void) {
 			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_GALLEON_LIFE_FIELD, intValue)){
 				nGalleonLife = *intValue;
 			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_SHIP_ENEMY_NUM_FEILD, intValue)){
+				nShipEnemyNum = *intValue;
+			}
 			// Initialize geometry members
 			// ---------------------------
 			if( FAILED(configureGeometry()) ) {
@@ -275,6 +281,10 @@ HRESULT GameState::configure(void) {
 		nGalleonLife = GAMESTATE_GALLEON_LIFE_DEFAULT;
 		logMessage(L"nGalleonLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nGalleonLife));
 	}
+	if (nShipEnemyNum < 0){
+		nShipEnemyNum = GAMESTATE_SHIP_ENEMY_NUM_DEFAULT;
+		logMessage(L"nShipEnemyNum cannot be zero or negative. Reverting to default value of " + std::to_wstring(nShipEnemyNum));
+	}
 
 	// Initialization
 	m_bSpawnGrid = bSpawnGrid;
@@ -288,6 +298,7 @@ HRESULT GameState::configure(void) {
 	m_ShipPlayerLife = nShipPlayerLife;
 	m_ShipEnemyLife = nShipEnemyLife;
 	m_GalleonLife = nGalleonLife;
+	m_nEShip = nShipEnemyNum;
 
 	m_tree = new Octtree(treeLocation, static_cast<float>(treeLength), treeDepth);
 
@@ -438,6 +449,8 @@ HRESULT GameState::initializeAsteroid(ID3D11Device* device) {
 
 HRESULT GameState::fillOctree(void) {
 	
+	srand((unsigned int)time(NULL));
+
 	if (m_bSpawnGrid) {
 		if (FAILED(spawnAsteroidsGrid(m_nAsteroidsX, m_nAsteroidsY, m_nAsteroidsZ))) {
 			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
@@ -454,7 +467,7 @@ HRESULT GameState::fillOctree(void) {
 	}
 	
 	
-	if (FAILED(spawnEnemyShip())){
+	if (FAILED(spawnEnemyShip(m_nEShip))){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	
@@ -487,8 +500,6 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	srand((unsigned int)time(NULL));
-
 	for (size_t i = 0; i < n; ++i){
 
 		newObject = new ObjectModel(m_asteroid, ObjectType::Asteroid, m_asteroidLife);
@@ -496,7 +507,6 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 		float offSX = (float)(rand() % 500 - 250);
 		float offSY = (float)(rand() % 500 - 250);
 		float offSZ = (float)(rand() % 500 - 250);
-		//offset = XMFLOAT3(static_cast<float>(i*2), static_cast<float>(i*2), static_cast<float>(i*2));
 		offset = XMFLOAT3(offSX, offSY, offSZ);
 
 		// Center
@@ -688,11 +698,9 @@ HRESULT GameState::spawnPlayerShip()
 	
 	m_camera->SetFollowTransform(parent);
 	return ERROR_SUCCESS;
-
-	//return m_ship->spawn(m_tree);
 }
 
-HRESULT GameState::spawnEnemyShip(){
+HRESULT GameState::spawnEnemyShip(const size_t n){
 	if (m_ship == 0) {
 		logMessage(L"Cannot spawn the ship before the ship has been constructed and configured.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_WRONG_STATE);
@@ -701,31 +709,38 @@ HRESULT GameState::spawnEnemyShip(){
 	ObjectModel* newObject = 0;
 	Transformable* bone = 0;
 	Transformable* parent = 0;
-
-	newObject = new ObjectModel(m_ship, ObjectType::EnemyShip, m_ShipEnemyLife);
-
-	//root
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-5.0f, -5.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	parent = bone;
-	newObject->addTransformable(bone);
-
-	//left wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
-
-	//right wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+	XMFLOAT3 offset;
+	float offSX, offSY, offSZ;
 
 
-	if (m_tree->addObject(newObject) == -1){
-		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+	for (size_t i = 0; i < n; i++){
+		newObject = new ObjectModel(m_ship, ObjectType::EnemyShip, m_ShipEnemyLife);
+		offSX = (float)(rand() % 500 - 250);
+		offSY = (float)(rand() % 500 - 250);
+		offSZ = (float)(rand() % 500 - 250);
+		offset = XMFLOAT3(offSX, offSY, offSZ);
+
+		//root
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), offset, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		parent = bone;
+		newObject->addTransformable(bone);
+
+		//left wing
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+		//right wing
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+
+		if (m_tree->addObject(newObject) == -1){
+			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		}
 	}
 	return ERROR_SUCCESS;
-
-	//return m_ship->spawn(m_tree);
 }
 
 HRESULT GameState::spawnMine(){
