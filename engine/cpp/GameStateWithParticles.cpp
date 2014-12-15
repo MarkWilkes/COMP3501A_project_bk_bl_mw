@@ -310,6 +310,24 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 		for( vector<ActiveParticles<RandomBurstCone>*>::size_type i = nJets - 1; (i >= 0) && (i < nJets); --i ) {
 
 			// collision check rocket weapon
+			std::vector<ObjectModel *>* collisions = new std::vector<ObjectModel *>();
+			XMFLOAT3 direction = m_weaponRocketTransform->getForwardLocalDirection();
+			XMVECTOR dirVec = XMLoadFloat3(&direction);
+			XMStoreFloat3(&direction, XMVector3Normalize(dirVec));
+
+			m_tree->checkCollisionsRay(collisions, m_weaponRocketTransform->getPosition(), direction);
+
+			for (int k = 0; k < collisions->size(); ++k) {
+				XMFLOAT3 shipPos = m_shipTransform->getPosition();
+				XMFLOAT3 objPos = (*collisions)[k]->getBoundingOrigin();
+				XMFLOAT3 diff = XMFLOAT3(shipPos.x - objPos.x, shipPos.y - objPos.y, shipPos.z - objPos.z);
+				XMVECTOR diffVec = XMLoadFloat3(&diff);
+				XMFLOAT3 length;
+				XMStoreFloat3(&length, XMVector3Length(diffVec));
+				if (length.x != 0) { // not the player ship
+					(*collisions)[k]->takeWeaponDamage(1);
+				}
+			}
 
 			result = (*m_jets)[i]->update(currentTime, updateTimeInterval, isExpired, m_demo_enabled);
 			if( FAILED(result) ) {
@@ -507,11 +525,11 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 			m_rocketWeaponExpired = false;
 			m_weaponRocketTransform = new Transformable(
 				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
-				XMFLOAT3(0.0f, 0.0f, 0.0f), // Position
-				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				m_shipTransform->getPosition(), // Position
+				m_shipTransform->getOrientation() // Orientation
 				);
 
-			m_weaponRocketTransform->setParent(m_shipTransform);
+			//m_weaponRocketTransform->setParent(m_shipTransform);
 
 			if (FAILED(spawnJet(m_weaponRocketTransform))) {
 				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
