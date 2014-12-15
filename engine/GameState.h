@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Transformable.h"
+#include "PropellerTransformable.h"
 #include "State.h"
 #include "ConfigUser.h"
 #include "../camera/Camera.h"

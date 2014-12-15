@@ -24,7 +24,9 @@ Description
 
 #include <DirectXMath.h>
 #include "Transformable.h"
-#include "../../engine/GridCubeTextured.h"
+#include "PropellerTransformable.h"
+#include "CubeModel.h"
+#include "SphereModel.h"
 #include "LogUser.h"
 #include "../../oct_tree.h"
 #include "../../ObjectModel.h"
@@ -47,7 +49,7 @@ or constructor/function arguments (where necessary)
 Refer to LogUser.h and ConfigUser.h
 */
 #define SHIPMODEL_LOGUSER_SCOPE		L"ShipModel_LogUser"
-#define SHIPMODEL_CONFIGUSER_SCOPE		L"ShipModel_ConfigUser"
+#define SHIPMODEL_CONFIGUSER_SCOPE	L"ShipModel_ConfigUser"
 
 class ShipModel : public IGeometry, public LogUser
 {
@@ -70,11 +72,15 @@ public:
 	virtual HRESULT setTransformables(const std::vector<Transformable*>* const transforms) override;
 	virtual XMFLOAT3 getPosition() override;
 	virtual float getRadius() override;
-	std::vector<Transformable*>* getTransformables();
 private:
-	GridCubeTextured* body;
-	GridCubeTextured* leftWing;
-	GridCubeTextured* rightWing;
+	CubeModel* body;
+	CubeModel* leftWing;
+	CubeModel* rightWing;
+	SphereModel* capsule;
+	CubeModel* leftPropellerA;
+	CubeModel* leftPropellerB;
+	CubeModel* rightPropellerA;
+	CubeModel* rightPropellerB;
 
 	ShipModel(const ShipModel& other);
 	ShipModel& operator=(const ShipModel& other);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -209,7 +209,7 @@
     </ClCompile>
     <ClCompile Include="GridCubeTextured.cpp">
       <Filter>Unprocessed Source Files</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="cpp\geometry\MineShipModel.cpp">
       <Filter>source\geometry</Filter>
     </ClCompile>
@@ -250,6 +250,9 @@
       <Filter>source\physics</Filter>
     </ClCompile>
     <ClCompile Include="cpp\physics\HomingTransformable.cpp">
+      <Filter>source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\physics\PropellerTransformable.cpp">
       <Filter>source\physics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -412,7 +415,7 @@
     </ClInclude>
     <ClInclude Include="GridCubeTextured.h">
       <Filter>Unprocessed Header Files</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="header\geometry\MineShipModel.h">
       <Filter>header\geometry</Filter>
     </ClInclude>
@@ -453,6 +456,9 @@
       <Filter>header\physics</Filter>
     </ClInclude>
     <ClInclude Include="header\physics\HomingTransformable.h">
+      <Filter>header\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\physics\PropellerTransformable.h">
       <Filter>header\physics</Filter>
     </ClInclude>
   </ItemGroup>
