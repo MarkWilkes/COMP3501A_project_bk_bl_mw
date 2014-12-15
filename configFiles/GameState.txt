@@ -34,8 +34,8 @@ INT -- GameState::nAsteroidsZ = 3
 
 # Life external configuration
 #----------------------------
-INT -- GameState::nAsteroidLife = 5
-INT -- GameState::nMineLife = 3
+INT -- GameState::nAsteroidLife = 2
+INT -- GameState::nMineLife = 2
 INT -- GameState::nShipPlayerLife = 7
 INT -- GameState::nShipEnemyLife = 2
 INT -- GameState::nGalleonLife = 7
@@ -43,6 +43,7 @@ INT -- GameState::nGalleonLife = 7
 # Enemy Numbers external configuration
 #-------------------------------------
 INT -- GameState::nEnemyShipNum = 12
+INT -- GameState::nMineNum = 25
 
 # Allows the game state to provide a sharable config instance
 # -----------------------------------------------------------

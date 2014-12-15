@@ -74,8 +74,11 @@
 #define GAMESTATE_GALLEON_LIFE_FIELD L"nGalleonLife"
 #define GAMESTATE_GALLEON_LIFE_DEFAULT 5
 
-#define GAMESTATE_SHIP_ENEMY_NUM_FEILD L"nEnemyShipNum"
+#define GAMESTATE_SHIP_ENEMY_NUM_FIELD L"nEnemyShipNum"
 #define GAMESTATE_SHIP_ENEMY_NUM_DEFAULT 10
+
+#define GAMESTATE_MINE_NUM_FIELD L"nMineNum"
+#define GAMESTATE_MINE_NUM_DEFAULT 10
 
 
 
@@ -121,6 +124,7 @@ private:
 	size_t m_nAsteroidsX, m_nAsteroidsY, m_nAsteroidsZ;
 	int m_asteroidLife, m_mineLife, m_ShipPlayerLife, m_ShipEnemyLife, m_GalleonLife;
 	int m_nEShip;
+	int m_nMine;
 
 public:
 	/* 'configureNow' allows derived classes to postpone configuration
@@ -179,7 +183,7 @@ protected:
 
 	virtual HRESULT spawnEnemyShip(const size_t n);
 
-	virtual HRESULT spawnMine();
+	virtual HRESULT spawnMine(const size_t n);
 
 	virtual HRESULT spawnGalleon();
 	// Particle system API (implemented in a derived class)

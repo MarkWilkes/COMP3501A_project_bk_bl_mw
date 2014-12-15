@@ -134,6 +134,7 @@ HRESULT GameState::configure(void) {
 	int nGalleonLife = GAMESTATE_GALLEON_LIFE_DEFAULT;
 
 	int nShipEnemyNum = GAMESTATE_SHIP_ENEMY_NUM_DEFAULT;
+	int nMineNum = GAMESTATE_MINE_NUM_DEFAULT;
 
 	if (hasConfigToUse()) {
 
@@ -215,8 +216,12 @@ HRESULT GameState::configure(void) {
 				nGalleonLife = *intValue;
 			}
 
-			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_SHIP_ENEMY_NUM_FEILD, intValue)){
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_SHIP_ENEMY_NUM_FIELD, intValue)){
 				nShipEnemyNum = *intValue;
+			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_MINE_NUM_FIELD, intValue)){
+				nMineNum = *intValue;
 			}
 			// Initialize geometry members
 			// ---------------------------
@@ -285,6 +290,11 @@ HRESULT GameState::configure(void) {
 		nShipEnemyNum = GAMESTATE_SHIP_ENEMY_NUM_DEFAULT;
 		logMessage(L"nShipEnemyNum cannot be zero or negative. Reverting to default value of " + std::to_wstring(nShipEnemyNum));
 	}
+	if (nMineNum < 0){
+		nMineNum = GAMESTATE_MINE_NUM_DEFAULT;
+		logMessage(L"nMineNum cannot be zero or negative. Reverting to default value of " + std::to_wstring(nMineNum));
+	}
+
 
 	// Initialization
 	m_bSpawnGrid = bSpawnGrid;
@@ -299,6 +309,7 @@ HRESULT GameState::configure(void) {
 	m_ShipEnemyLife = nShipEnemyLife;
 	m_GalleonLife = nGalleonLife;
 	m_nEShip = nShipEnemyNum;
+	m_nMine = nMineNum;
 
 	m_tree = new Octtree(treeLocation, static_cast<float>(treeLength), treeDepth);
 
@@ -471,7 +482,7 @@ HRESULT GameState::fillOctree(void) {
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	
-	if (FAILED(spawnMine())) {
+	if (FAILED(spawnMine(m_nMine))) {
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 
@@ -743,7 +754,7 @@ HRESULT GameState::spawnEnemyShip(const size_t n){
 	return ERROR_SUCCESS;
 }
 
-HRESULT GameState::spawnMine(){
+HRESULT GameState::spawnMine(const size_t m_nMine){
 	if (m_mine == 0){
 		logMessage(L"Cannot spawn the mine before the mine has been constructed and configured.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_WRONG_STATE);
@@ -752,46 +763,55 @@ HRESULT GameState::spawnMine(){
 	ObjectModel* newObject = 0;
 	Transformable* bone = 0;
 	Transformable* parent = 0;
+	XMFLOAT3 offset;
+	float offSX, offSY, offSZ;
 
-	newObject = new ObjectModel(m_mine, ObjectType::MineShip, m_mineLife);
+	for (size_t i = 0; i < m_nMine; i++){
+		offSX = (float)(rand() % 500 - 250);
+		offSY = (float)(rand() % 500 - 250);
+		offSZ = (float)(rand() % 500 - 250);
+		offset = XMFLOAT3(offSX, offSY, offSZ);
 
-	//root
-	bone = new Transformable(XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT3(13.0f,13.0f,0.0f), XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
-	parent = bone;
-	newObject->addTransformable(bone);
+		newObject = new ObjectModel(m_mine, ObjectType::MineShip, m_mineLife);
 
-	//right pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//root
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), offset, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		parent = bone;
+		newObject->addTransformable(bone);
 
-	//left pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//right pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	//top pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//left pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	//bottom pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//top pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, -1, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	//front pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//bottom pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	//back pin
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//front pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	if (m_tree->addObject(newObject) == -1){
-		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		//back pin
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+		if (m_tree->addObject(newObject) == -1){
+			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		}
 	}
 	return ERROR_SUCCESS;
 }
