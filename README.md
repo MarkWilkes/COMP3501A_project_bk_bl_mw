@@ -9,7 +9,7 @@
 
 ##Game Performance
 
-Known Crash: On player collision with the Galleon ship model (double-sphere bodied ship).
+Known Crash: On player death (from collision), the game will crash.
 
 Note the Control + O command to toggle special effects.
 
@@ -146,6 +146,9 @@ The following works were consulted for ideas during development:
   - Zink, Jason, Matt Pettineo and Jack Hoxley.
     _Practical Rendering and Computation with Direct 3D 11._
     Boca Raton: CRC Press Taylor & Francis Group, 2011. (Chapter 12)
+- ORCA collision avoidance
+  - Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, and Dinesh Manocha,
+    link: Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, and Dinesh Manocha
 
 ## Sources of Assets
 
