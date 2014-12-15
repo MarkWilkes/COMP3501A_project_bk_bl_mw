@@ -18,14 +18,14 @@ BOOL -- GameState_ConfigUser::enableConfigUseLogging = true
 
 # Octree configuration
 # --------------------
-INT -- GameState::treeDepth = 3
+INT -- GameState::treeDepth = 4
 DOUBLE -- GameState::treeLength = 1000.0
 FLOAT4 -- GameState::treeLocation = (-500.0, 500.0, -500.0, 0.0)
 
 # Asteroids external configuration
 # --------------------------------
 BOOL -- GameState::bSpawnGrid = false
-INT -- GameState::nAsteroids = 15
+INT -- GameState::nAsteroids = 50
 DOUBLE -- GameState::radiAsteroids = 1.0
 DOUBLE -- GameState::asteroidGridSpacing = 5.0
 INT -- GameState::nAsteroidsX = 3
