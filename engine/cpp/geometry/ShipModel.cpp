@@ -75,10 +75,10 @@ HRESULT ShipModel::initialize(ID3D11Device* d3dDevice, vector<Transformable*>* b
 
 	capsule = new SphereModel(m_bones->at(3), 0.5f, new XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
-	leftPropellerA = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(4)), 0.15f, 0.5f, 0.15f, 0);
-	leftPropellerB = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(5)), 0.15f, 0.5f, 0.15f, 0);
-	rightPropellerA = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(6)), 0.15f, 0.5f, 0.15f, 0);
-	rightPropellerB = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(7)), 0.15f, 0.5f, 0.15f, 0);
+	leftPropellerA = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(4)), 0.15f, 1.25f, 0.25f, 0);
+	leftPropellerB = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(5)), 0.15f, 1.25f, 0.25f, 0);
+	rightPropellerA = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(6)), 0.15f, 1.25f, 0.25f, 0);
+	rightPropellerB = new CubeModel(static_cast<PropellerTransformable*>(m_bones->at(7)), 0.15f, 1.25f, 0.25f, 0);
 
 	if (FAILED(body->initialize(d3dDevice))) {
 		logMessage(L"Failed to initialize CubeModel object.");
