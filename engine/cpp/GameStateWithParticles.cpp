@@ -330,37 +330,44 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 
 	// Update all lasers
 	vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type nLasers = m_lasers->size();
-	if( nLasers > 0 ) {
-		for( vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type i = nLasers - 1; (i >= 0) && (i < nLasers); --i ) {
+	if (nLasers > 0) {
+		for (vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type i = nLasers - 1; (i >= 0) && (i < nLasers); --i) {
 			result = (*m_lasers)[i]->update(currentTime, updateTimeInterval, isExpired, m_demo_enabled);
 			if (m_laserWeaponExpired) {
 				isExpired = true;
-				m_laserWeaponExpired = false;
 			}
-			if( FAILED(result) ) {
+			if (FAILED(result)) {
 				logMessage(L"Failed to update laser particle system at index = " + std::to_wstring(i) + L".");
 				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
-			} else if( isExpired ) {
+			}
+			else if (isExpired) {
 				result = removeLaser((*m_lasers)[i]->getTransform());
-				if( FAILED(result) ) {
+				if (FAILED(result)) {
 					logMessage(L"Failed to remove expired laser particle system at index = " + std::to_wstring(i) + L".");
 					return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
-				} else {
+				}
+				else {
 					nLasers = m_lasers->size();
-					if( i >= nLasers ) {
+					if (i >= nLasers) {
 						/* This may result in multiple update() calls to the same
 						   laser, but it is assumed that this does not matter.
-						 */
+						   */
 						i = nLasers - 1;
 					}
 
-					//if (m_weaponLaserStart) delete m_weaponLaserStart;
-					//if (m_weaponLaserEnd) delete m_weaponLaserEnd;
-					m_weaponLaserStart = 0;
-					m_weaponLaserEnd = 0;
+
 				}
 			}
 		}
+		if (m_laserWeaponExpired) {
+			m_lasers->clear();
+			if (m_weaponLaserStart) delete m_weaponLaserStart;
+			if (m_weaponLaserEnd) delete m_weaponLaserEnd;
+			m_weaponLaserStart = 0;
+			m_weaponLaserEnd = 0;
+		}
+		
+		m_laserWeaponExpired = false;
 	}
 
 	// Update all ball lightning effects
