@@ -59,6 +59,23 @@
 #define GAMESTATE_NUMBER_OF_ASTEROIDS_Z_FIELD L"nAsteroidsZ"
 #define GAMESTATE_NUMBER_OF_ASTEROIDS_Z_DEFAULT 0 // 10
 
+#define GAMESTATE_ASTEROID_LIFE_FIELD L"nAsteroidLife"
+#define GAMESTATE_ASTEROID_LIFE_DEFAULT 3
+
+#define GAMESTATE_MINE_LIFE_FIELD L"nMineLife"
+#define GAMESTATE_MINE_LIFE_DEFAULT 1
+
+#define GAMESTATE_SHIP_PLAYER_LIFE_FIELD L"nShipPlayerLife"
+#define GAMESTATE_SHIP_PLAYER_LIFE_DEFAULT 5
+
+#define GAMESTATE_SHIP_ENEMY_LIFE_FIELD L"nShipEnemyLife"
+#define GAMESTATE_SHIP_ENEMY_LIFE_DEFAULT 3
+
+#define GAMESTATE_GALLEON_LIFE_FIELD L"nGalleonLife"
+#define GAMESTATE_GALLEON_LIFE_DEFAULT 5
+
+
+
 // LogUser and ConfigUser configuration parameters
 // Refer to LogUser.h and ConfigUser.h
 #define GAMESTATE_LOGUSER_SCOPE			L"GameState_LogUser"
@@ -99,6 +116,7 @@ private:
 	// if spawning a grid of asteroids
 	double m_asteroidGridSpacing;
 	size_t m_nAsteroidsX, m_nAsteroidsY, m_nAsteroidsZ;
+	int m_asteroidLife, m_mineLife, m_ShipPlayerLife, m_ShipEnemyLife, m_GalleonLife;
 
 public:
 	/* 'configureNow' allows derived classes to postpone configuration

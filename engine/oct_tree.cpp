@@ -71,13 +71,6 @@ int Octtree::checkCollisionsBetween(Octnode* node1, Octnode* node2){
 			//check if distance is less than the sum of the radiis
 			if (distBetween < (	node1->nodeObjectList->at(i)->getBoundingRadius() +
 								node2->nodeObjectList->at(j)->getBoundingRadius())){
-				//if they are colliding add them to the list of pairs of collisions
-				/*
-				ObjectModel **newCollision = new ObjectModel*[2];
-				newCollision[0] = node1->nodeObjectList->at(i);
-				newCollision[1] = node2->nodeObjectList->at(j);
-				outCollisions->push_back(newCollision);
-				*/
 				if (node1->nodeObjectList->at(i)->type == ObjectType::MineShip ||
 					node2->nodeObjectList->at(j)->type == ObjectType::MineShip){
 					//extra damage
@@ -222,7 +215,7 @@ HRESULT Octtree::update(const DWORD currentTime, const DWORD updateTimeInterval)
 		}
 	}
 	
-	if ((++ticksForCollision %= 5) == 0){
+	if ((++ticksForCollision %= 4) == 3){
 		result = refitting();
 
 		checkCollisions();
@@ -232,7 +225,8 @@ HRESULT Octtree::update(const DWORD currentTime, const DWORD updateTimeInterval)
 				completeObjectList->at(i)->takeDamage();
 			}
 		}
-
+	}
+	if (ticksForCollision == 1){
 		trimTree();
 
 		vector<ObjectModel*>::iterator curr = completeObjectList->begin();

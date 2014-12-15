@@ -127,6 +127,12 @@ HRESULT GameState::configure(void) {
 	int nAsteroidsY = GAMESTATE_NUMBER_OF_ASTEROIDS_Y_DEFAULT;
 	int nAsteroidsZ = GAMESTATE_NUMBER_OF_ASTEROIDS_Z_DEFAULT;
 
+	int nAsteroidsLife = GAMESTATE_ASTEROID_LIFE_DEFAULT;
+	int nMineLife = GAMESTATE_MINE_LIFE_DEFAULT;
+	int nShipPlayerLife = GAMESTATE_SHIP_PLAYER_LIFE_DEFAULT;
+	int nShipEnemyLife = GAMESTATE_SHIP_ENEMY_LIFE_DEFAULT;
+	int nGalleonLife = GAMESTATE_GALLEON_LIFE_DEFAULT;
+
 	if (hasConfigToUse()) {
 
 		// Configure base members
@@ -187,6 +193,25 @@ HRESULT GameState::configure(void) {
 				nAsteroidsZ = *intValue;
 			}
 
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_ASTEROID_LIFE_FIELD, intValue)){
+				nAsteroidsLife = *intValue;
+			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_MINE_LIFE_FIELD, intValue)){
+				nMineLife = *intValue;
+			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_SHIP_PLAYER_LIFE_FIELD, intValue)){
+				nShipPlayerLife = *intValue;
+			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_SHIP_ENEMY_LIFE_FIELD, intValue)){
+				nShipEnemyLife = *intValue;
+			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_GALLEON_LIFE_FIELD, intValue)){
+				nGalleonLife = *intValue;
+			}
 			// Initialize geometry members
 			// ---------------------------
 			if( FAILED(configureGeometry()) ) {
@@ -230,6 +255,26 @@ HRESULT GameState::configure(void) {
 		nAsteroidsZ = GAMESTATE_NUMBER_OF_ASTEROIDS_Z_DEFAULT;
 		logMessage(L"nAsteroidsZ cannot be zero or negative. Reverting to default value of " + std::to_wstring(nAsteroidsZ));
 	}
+	if (nAsteroidsLife < 0){
+		nAsteroidsLife = GAMESTATE_ASTEROID_LIFE_DEFAULT;
+		logMessage(L"nAsteroidLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nAsteroidsLife));
+	}
+	if (nMineLife < 0){
+		nMineLife = GAMESTATE_MINE_LIFE_DEFAULT;
+		logMessage(L"nMineLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nMineLife));
+	}
+	if (nShipPlayerLife < 0){
+		nShipPlayerLife = GAMESTATE_SHIP_PLAYER_LIFE_DEFAULT;
+		logMessage(L"nShipPlayerLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nShipPlayerLife));
+	}
+	if (nShipEnemyLife < 0){
+		nShipEnemyLife = GAMESTATE_SHIP_ENEMY_LIFE_DEFAULT;
+		logMessage(L"nShipEnemyLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nShipEnemyLife));
+	}
+	if (nGalleonLife < 0){
+		nGalleonLife = GAMESTATE_GALLEON_LIFE_DEFAULT;
+		logMessage(L"nGalleonLife cannot be zero or negative. Reverting to default value of " + std::to_wstring(nGalleonLife));
+	}
 
 	// Initialization
 	m_bSpawnGrid = bSpawnGrid;
@@ -238,6 +283,12 @@ HRESULT GameState::configure(void) {
 	m_nAsteroidsX = nAsteroidsX;
 	m_nAsteroidsY = nAsteroidsY;
 	m_nAsteroidsZ = nAsteroidsZ;
+	m_asteroidLife = nAsteroidsLife;
+	m_mineLife = nMineLife;
+	m_ShipPlayerLife = nShipPlayerLife;
+	m_ShipEnemyLife = nShipEnemyLife;
+	m_GalleonLife = nGalleonLife;
+
 	m_tree = new Octtree(treeLocation, static_cast<float>(treeLength), treeDepth);
 
 	return result;
@@ -440,7 +491,7 @@ HRESULT GameState::spawnAsteroids(const size_t n) {
 
 	for (size_t i = 0; i < n; ++i){
 
-		newObject = new ObjectModel(m_asteroid, ObjectType::Asteroid, 16);
+		newObject = new ObjectModel(m_asteroid, ObjectType::Asteroid, m_asteroidLife);
 
 		float offSX = (float)(rand() % 500 - 250);
 		float offSY = (float)(rand() % 500 - 250);
@@ -493,7 +544,7 @@ HRESULT GameState::spawnAsteroidsGrid(const size_t x, const size_t y, const size
 		for (size_t j = 0; j < y; ++j){
 			for (size_t k = 0; k < z; ++k){
 
-				newObject = new ObjectModel(m_asteroid, ObjectType::Asteroid,16);
+				newObject = new ObjectModel(m_asteroid, ObjectType::Asteroid, m_asteroidLife);
 
 				float offsetAmount = static_cast<float>(m_asteroidGridSpacing);
 				offset = XMFLOAT3(static_cast<float>(i * offsetAmount), static_cast<float>(j * offsetAmount), static_cast<float>(k * offsetAmount));
@@ -614,7 +665,7 @@ HRESULT GameState::spawnPlayerShip()
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship, ObjectType::PlayerShip,20);
+	newObject = new ObjectModel(m_ship, ObjectType::PlayerShip, m_ShipPlayerLife);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -651,7 +702,7 @@ HRESULT GameState::spawnEnemyShip(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_ship, ObjectType::EnemyShip,17);
+	newObject = new ObjectModel(m_ship, ObjectType::EnemyShip, m_ShipEnemyLife);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-5.0f, -5.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -687,7 +738,7 @@ HRESULT GameState::spawnMine(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_mine, ObjectType::MineShip,16);
+	newObject = new ObjectModel(m_mine, ObjectType::MineShip, m_mineLife);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f,1.0f,1.0f), XMFLOAT3(13.0f,13.0f,0.0f), XMFLOAT4(0.0f,0.0f,0.0f,1.0f));
@@ -740,7 +791,7 @@ HRESULT GameState::spawnGalleon(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_galleon, ObjectType::GalleonShip,20);
+	newObject = new ObjectModel(m_galleon, ObjectType::GalleonShip,m_GalleonLife);
 
 	//root
 	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-10.0f, -10.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));

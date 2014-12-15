@@ -36,6 +36,11 @@ ObjectModel::~ObjectModel(){
 
 
 XMFLOAT3 ObjectModel::getBoundingOrigin(){
+
+	int val;
+	if (type == ObjectType::MineShip){
+		val = life;
+	}
 	XMFLOAT3 pos = model->getPosition();
 	
 	XMFLOAT3 newPos;
@@ -158,7 +163,7 @@ bool ObjectModel::isDead(){
 }
 
 bool ObjectModel::takeDamage(){
-	if (collidedWith == ObjectType::MineShip){
+	if (collidedWith == ObjectType::MineShip && type != ObjectType::MineShip){
 		life -= 2;
 	}
 	else {
