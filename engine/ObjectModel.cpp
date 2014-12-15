@@ -15,9 +15,9 @@ It is used for the storage of these attributes in the OctTree
 // Logging output and configuration input filename
 #define OBJECTMODEL_FILE_NAME L"ObjectModel.txt"
 
-ObjectModel::ObjectModel(IGeometry* geometry, ObjectType type) :
+ObjectModel::ObjectModel(IGeometry* geometry, ObjectType type, int lifeAmount) :
 LogUser(true, OBJECTMODEL_START_MSG_PREFIX),
-model(0), tForms(0), type(type), seeking(type == ObjectType::Other ? false : true), goalPoint(0, 0, 0), moveToPoint(0,0,0)
+model(0), tForms(0), type(type), seeking(type == ObjectType::Other ? false : true), goalPoint(0, 0, 0), moveToPoint(0, 0, 0), life(lifeAmount)
 {
 	model = geometry;
 	tForms = new vector<Transformable *>();
@@ -151,4 +151,33 @@ int ObjectModel::getAgentNum(){
 
 void ObjectModel::setAgentNum(int aNum){
 	agentNum = aNum;
+}
+
+bool ObjectModel::isDead(){
+	return life <= 0 ? true : false;
+}
+
+bool ObjectModel::takeDamage(){
+	if (collidedWith == ObjectType::MineShip){
+		life -= 2;
+	}
+	else {
+		life -= 1;
+	}
+
+	resetCollided();
+	return isDead();
+}
+
+bool ObjectModel::hasCollided(){
+	return collided;
+}
+
+void ObjectModel::resetCollided(){
+	collided = false;
+}
+
+void ObjectModel::collideWith(ObjectType collider){
+	collided = true;
+	collidedWith = collider;
 }

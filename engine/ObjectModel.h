@@ -12,14 +12,14 @@ using namespace std;
 #include "IGeometry.h"
 #include "LogUser.h"
 
-enum class ObjectType{EnemyShip, GalleonShip, MineShip, Other};
+enum class ObjectType{ EnemyShip, GalleonShip, MineShip, PlayerShip, Asteroid, Other };
 
 // Logging message prefix
 #define OBJECTMODEL_START_MSG_PREFIX L"ObjectModel "
 
 class ObjectModel : public LogUser {
 	public:
-		ObjectModel(IGeometry* geometry, ObjectType type);
+		ObjectModel(IGeometry* geometry, ObjectType type, int life);
 		virtual ~ObjectModel(void);
 
 		virtual XMFLOAT3 getBoundingOrigin();
@@ -38,6 +38,12 @@ class ObjectModel : public LogUser {
 		virtual int getAgentNum();
 		virtual void setAgentNum(int aNum);
 
+		virtual bool isDead();
+		virtual bool takeDamage();
+		virtual void collideWith(ObjectType collider);
+		virtual bool hasCollided();
+		virtual void resetCollided();
+
 		const ObjectType type;
 	protected:
 		IGeometry* model;
@@ -48,4 +54,10 @@ class ObjectModel : public LogUser {
 		XMFLOAT3 moveToPoint;
 
 		int agentNum;
+
+		int life;
+
+		bool collided;
+
+		ObjectType collidedWith;
 };

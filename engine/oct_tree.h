@@ -55,6 +55,8 @@ class Octtree{
 		~Octtree();
 		
 		int addObject(ObjectModel * newGameObject);
+
+		int addPlayer(ObjectModel * player);
 		
 		virtual HRESULT drawContents(ID3D11DeviceContext* const context, GeometryRendererManager& manager, Camera * camera);
 
@@ -66,13 +68,15 @@ class Octtree{
 		int maxDepth;
 		vector<ObjectModel *>* completeObjectList;
 
+		ObjectModel * playerObj;
+
 		virtual HRESULT refitting();
 		
-		int checkCollisions(vector<ObjectModel **>* outCollidingObjects);
-		int checkCollisionsBetween(Octnode* node1, Octnode* node2, vector<ObjectModel **>* outCollisions);
-		int checkCollisionsWithin(Octnode* node, vector<ObjectModel **>* outCollisions);
-		int checkUpTree(Octnode* currNode, Octnode* checkNode, vector<ObjectModel**>* outcollisions);
-		int traverseTreeDown(Octnode* node, vector<ObjectModel**>* outcollisions);
+		int checkCollisions();
+		int checkCollisionsBetween(Octnode* node1, Octnode* node2);
+		int checkCollisionsWithin(Octnode* node);
+		int checkUpTree(Octnode* currNode, Octnode* checkNode);
+		int traverseTreeDown(Octnode* node);
 		int checkCollisionsRay(vector<ObjectModel *>* outColliding, XMFLOAT3 posRay, XMFLOAT3 dirRay);
 		int findNewGoal(ObjectModel* mover);
 
@@ -82,4 +86,8 @@ class Octtree{
 		bool reachedGoal(ObjectModel* obj);
 
 		void updateSim();
+
+		void trimTree();
+		void trimBranch(Octnode* branch);
+		void trimLeaf(Octnode* leaf);
 };

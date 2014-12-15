@@ -241,15 +241,11 @@ void Transformable::MoveToPoint(DirectX::XMFLOAT3 pos){
 		axis = XMVectorAdd(axis, XMLoadFloat3(&XMFLOAT3(0.0001f, 0.0001f, 0.0001f)));
 	}
 	
-	//XMVECTOR dotVec = XMVector3Dot(forwardVec, newVec);
-
 	XMVECTOR angle = XMVector3AngleBetweenNormals(newVec,forwardVec);
 
 	float angleF;
 	XMStoreFloat(&angleF, angle);
 	
-	//angleF += XM_PIDIV2;
-
 	XMVECTOR rotq = XMQuaternionRotationAxis(axis, angleF);
 
 
