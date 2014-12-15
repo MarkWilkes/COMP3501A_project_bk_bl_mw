@@ -62,6 +62,9 @@ class Octtree{
 
 		virtual HRESULT update(const DWORD currentTime, const DWORD updateTimeInterval);
 
+		// public collision checks
+		int checkCollisionsRay(vector<ObjectModel *>* outColliding, XMFLOAT3 posRay, XMFLOAT3 dirRay);
+
 	protected:
 		RVO::RVOSimulator *rvoSim;
 		Octnode * rootNode;
@@ -79,7 +82,6 @@ class Octtree{
 		int checkCollisionsWithin(Octnode* node);
 		int checkUpTree(Octnode* currNode, Octnode* checkNode);
 		int traverseTreeDown(Octnode* node);
-		int checkCollisionsRay(vector<ObjectModel *>* outColliding, XMFLOAT3 posRay, XMFLOAT3 dirRay);
 		int findNewGoal(ObjectModel* mover);
 
 		void setupRVO();

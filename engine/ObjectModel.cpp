@@ -164,13 +164,28 @@ bool ObjectModel::isDead(){
 
 bool ObjectModel::takeDamage(){
 	if (collidedWith == ObjectType::MineShip && type != ObjectType::MineShip){
-		life -= 2;
+		life -= 50;
 	}
 	else {
-		life -= 1;
+		life -= 25;
 	}
 
 	resetCollided();
+	return isDead();
+}
+
+bool ObjectModel::takeWeaponDamage(int weaponType)
+{
+	if (weaponType == 0) { // laser
+		life -= 1;
+	}
+	else if (weaponType == 1) { // rocket
+		life -= 45;
+	}
+	else if (weaponType == 2) { // special
+		life -= 75;
+	}
+
 	return isDead();
 }
 

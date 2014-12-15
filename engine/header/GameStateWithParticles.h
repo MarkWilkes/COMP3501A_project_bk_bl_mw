@@ -19,6 +19,7 @@ Description
 #pragma once
 
 #include "GameState.h"
+#include "../ObjectModel.h"
 #include "UniformBurstSphere.h"
 #include "RandomBurstCone.h"
 #include "WanderingLineSpline.h"

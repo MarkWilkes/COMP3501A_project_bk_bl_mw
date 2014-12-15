@@ -308,6 +308,9 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 	vector<ActiveParticles<RandomBurstCone>*>::size_type nJets = m_jets->size();
 	if( nJets > 0 ) {
 		for( vector<ActiveParticles<RandomBurstCone>*>::size_type i = nJets - 1; (i >= 0) && (i < nJets); --i ) {
+
+			// collision check rocket weapon
+
 			result = (*m_jets)[i]->update(currentTime, updateTimeInterval, isExpired, m_demo_enabled);
 			if( FAILED(result) ) {
 				logMessage(L"Failed to update jet particle system at index = " + std::to_wstring(i) + L".");
@@ -346,6 +349,29 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 	vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type nLasers = m_lasers->size();
 	if (nLasers > 0) {
 		for (vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type i = nLasers - 1; (i >= 0) && (i < nLasers); --i) {
+
+			// collision check laser weapon
+			std::vector<ObjectModel *>* collisions = new std::vector<ObjectModel *>();
+			XMFLOAT3 firstPos = m_weaponLaserStart->getPosition();
+			XMFLOAT3 secondPos = m_weaponLaserEnd->getPosition();
+			XMFLOAT3 direction = XMFLOAT3(secondPos.x - firstPos.x, secondPos.y - firstPos.y, secondPos.z - firstPos.z);
+			XMVECTOR dirVec = XMLoadFloat3(&direction);
+			XMStoreFloat3(&direction, XMVector3Normalize(dirVec));
+			
+			m_tree->checkCollisionsRay(collisions, firstPos, direction);
+
+			for (int k = 0; k < collisions->size(); ++k) {
+				XMFLOAT3 shipPos = m_shipTransform->getPosition();
+				XMFLOAT3 objPos  = (*collisions)[k]->getBoundingOrigin();
+				XMFLOAT3 diff = XMFLOAT3(shipPos.x - objPos.x, shipPos.y - objPos.y, shipPos.z - objPos.z);
+				XMVECTOR diffVec = XMLoadFloat3(&diff);
+				XMFLOAT3 length;
+				XMStoreFloat3(&length, XMVector3Length(diffVec));
+				if (length.x != 0) { // not the player ship
+					(*collisions)[k]->takeWeaponDamage(0);
+				}
+			}
+
 			result = (*m_lasers)[i]->update(currentTime, updateTimeInterval, isExpired, m_demo_enabled);
 			if (m_laserWeaponExpired) {
 				isExpired = true;
@@ -393,6 +419,9 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 	vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::size_type nBalls = m_balls->size();
 	if( nBalls > 0 ) {
 		for( vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::size_type i = nBalls - 1; (i >= 0) && (i < nBalls); --i ) {
+
+			// collision check special weapon
+
 			result = (*m_balls)[i]->update(currentTime, updateTimeInterval, isExpired, true);
 			if( FAILED(result) ) {
 				logMessage(L"Failed to update ball particle system at index = " + std::to_wstring(i) + L".");
@@ -1109,6 +1138,7 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 
 	if( m_explosions->size() < m_demo_nExplosions ) {
 
+		/*
 		while( m_explosions->size() < m_demo_nExplosions ) {
 			u = distribution(generator);
 			v = distribution(generator);
@@ -1127,6 +1157,7 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
 				);
 
+			
 			m_explosions->emplace_back(new ActiveParticles<UniformBurstSphere>(
 				m_explosionModel,
 				transform,
@@ -1134,7 +1165,8 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 				m_currentTime,
 				XMFLOAT3(1.0f, 1.0f, 1.0f))
 				);
-		}
+			
+		}*/
 	}
 
 	if( m_jets->size() < GAMESTATEWITHPARTICLES_DEMO_NJETS ) {

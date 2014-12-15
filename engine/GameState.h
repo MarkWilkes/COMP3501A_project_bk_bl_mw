@@ -106,8 +106,9 @@ protected:
 	/* The transformation locating the player's ship */
 	Transformable* m_shipTransform;
 
-private:
 	Octtree* m_tree;
+
+private:
 
 	GridSphereTextured* m_asteroid;
 

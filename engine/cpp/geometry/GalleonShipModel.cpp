@@ -46,6 +46,14 @@ HRESULT GalleonShipModel::initialize(ID3D11Device* d3dDevice, vector<Transformab
 {
 	m_bones = bones;
 
+	if (bones == 0){
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_NULL_INPUT);
+	}
+
+	if (bones->size() != static_cast<std::vector<Transformable*>::size_type>(5)){
+		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_NULL_INPUT);
+	}
+
 	//rootTransform = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-10.0f, -10.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	body = new CubeModel(m_bones->at(0),
 		1.0f, 0.75f, 4.0f, 0);

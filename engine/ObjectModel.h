@@ -40,6 +40,7 @@ class ObjectModel : public LogUser {
 
 		virtual bool isDead();
 		virtual bool takeDamage();
+		bool takeWeaponDamage(int);
 		virtual void collideWith(ObjectType collider);
 		virtual bool hasCollided();
 		virtual void resetCollided();
