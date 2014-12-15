@@ -165,6 +165,8 @@ Description
 // Ball configuration
 #define GAMESTATEWITHPARTICLES_GEOMETRY_BALL_SCOPE L"ball"
 
+enum WeaponMode { WEAPON_LASER = 0, WEAPON_ROCKET, WEAPON_SPECIAL };
+
 class GameStateWithParticles : public GameState {
 
 private:
@@ -252,6 +254,8 @@ private:
 	// Data members
 private:
 
+	WeaponMode m_weaponMode;
+
 	// The model for all explosions
 	UniformBurstSphere* m_explosionModel;
 
@@ -266,6 +270,9 @@ private:
 
 	// The model for all lasers
 	UniformRandomSplineModel* m_laserModel;
+	bool                      m_laserWeaponExpired;
+	Transformable* m_weaponLaserStart;
+	Transformable* m_weaponLaserEnd;
 
 	// Keeps track of the positions at which to render lasers
 	std::vector<ActiveSplineParticles<UniformRandomSplineModel>*>* m_lasers;
@@ -326,6 +333,8 @@ public:
 	virtual HRESULT drawContents(ID3D11DeviceContext* const context, GeometryRendererManager& manager) override;
 
 	virtual HRESULT update(const DWORD currentTime, const DWORD updateTimeInterval) override;
+
+	virtual HRESULT poll(Keyboard& input, Mouse& mouse) override;
 
 	// Control functions
 public:

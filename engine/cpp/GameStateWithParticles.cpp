@@ -65,14 +65,15 @@ m_ballRadius(GAMESTATEWITHPARTICLES_BALL_RADIUS_DEFAULT),
 m_currentTime(0), m_demo_enabled(GAMESTATEWITHPARTICLES_DEMO_DEFAULT),
 m_demo_nExplosions(GAMESTATEWITHPARTICLES_DEMO_NEXPLOSIONS_DEFAULT),
 m_demo_zoneRadius(GAMESTATEWITHPARTICLES_DEMO_SHOWAREA_DEFAULT),
-m_demoStart(0), m_demoEnd(0)
+m_demoStart(0), m_demoEnd(0),
+m_weaponMode(WEAPON_LASER),
+m_weaponLaserStart(0), m_weaponLaserEnd(0), m_laserWeaponExpired(true)
 {
 	if( configureNow ) {
 		if( FAILED(configure()) ) {
 			throw std::exception("GameStateWithParticles configuration failed.");
 		}
 	}
-
 	m_identity = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
@@ -332,6 +333,10 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 	if( nLasers > 0 ) {
 		for( vector<ActiveSplineParticles<UniformRandomSplineModel>*>::size_type i = nLasers - 1; (i >= 0) && (i < nLasers); --i ) {
 			result = (*m_lasers)[i]->update(currentTime, updateTimeInterval, isExpired, m_demo_enabled);
+			if (m_laserWeaponExpired) {
+				isExpired = true;
+				m_laserWeaponExpired = false;
+			}
 			if( FAILED(result) ) {
 				logMessage(L"Failed to update laser particle system at index = " + std::to_wstring(i) + L".");
 				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
@@ -348,6 +353,11 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 						 */
 						i = nLasers - 1;
 					}
+
+					//if (m_weaponLaserStart) delete m_weaponLaserStart;
+					//if (m_weaponLaserEnd) delete m_weaponLaserEnd;
+					m_weaponLaserStart = 0;
+					m_weaponLaserEnd = 0;
 				}
 			}
 		}
@@ -388,6 +398,54 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 
 	// Update the base class
 	return GameState::update(currentTime, updateTimeInterval);
+}
+
+HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
+{
+	GameState::poll(input, mouse);
+	if (input.Up(0x31)) { // key = 1
+		m_weaponMode = WeaponMode::WEAPON_LASER;
+	} else if (input.Up(0x32)) { // key = 2
+		m_weaponMode = WeaponMode::WEAPON_ROCKET;
+	} else if (input.Up(0x33)) { // key = 3
+		m_weaponMode = WeaponMode::WEAPON_SPECIAL;
+	}
+
+	if (mouse.IsPressed(Mouse::LEFT)) {
+		if (m_weaponLaserStart == 0 && m_weaponLaserEnd == 0) {
+			XMFLOAT3 ship_pos = m_shipTransform->getPosition();
+			XMFLOAT3 ship_forward = m_shipTransform->getForwardLocalDirection();
+			m_weaponLaserStart = new Transformable(
+				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+				XMFLOAT3(ship_pos.x, ship_pos.y, ship_pos.z + 2), // Position
+				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				);
+
+			m_weaponLaserEnd = new Transformable(
+				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+				XMFLOAT3(ship_forward.x * 10, ship_forward.y * 10, ship_forward.z * 10), // Position
+				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				);
+
+			if( FAILED(spawnLaser(m_weaponLaserStart, m_weaponLaserEnd)) ) {
+				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+			}
+		}
+	}
+	else if (mouse.IsPressed(Mouse::RIGHT)) {
+
+	}
+	else if (mouse.IsPressed(Mouse::MIDDLE)) {
+
+	}
+
+
+	HRESULT result = ERROR_SUCCESS;
+	if (mouse.IsPressed(Mouse::LEFT) == false) {
+		m_laserWeaponExpired = true;
+	}
+
+	return ERROR_SUCCESS;
 }
 
 HRESULT GameStateWithParticles::spawnExplosion(Transformable* const transform) {
@@ -1047,9 +1105,9 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 				);
 		}
 
-		if( FAILED(spawnLaser(m_demoStart, m_demoEnd)) ) {
-			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
-		}
+		//if( FAILED(spawnLaser(m_demoStart, m_demoEnd)) ) {
+		//	return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		//}
 	}
 
 	if( m_balls->size() < GAMESTATEWITHPARTICLES_DEMO_NBALLS ) {

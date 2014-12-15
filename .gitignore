@@ -11,3 +11,4 @@ win32_base/configuration/test/output/
 win32_base/configuration/output/
 DirectXTK/
 textures/
+/bin

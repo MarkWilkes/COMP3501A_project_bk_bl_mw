@@ -51,6 +51,26 @@ ShipModel::~ShipModel(void)
 		delete capsule;
 		capsule = 0;
 	}
+
+	if (leftPropellerA != 0) {
+		delete leftPropellerA;
+		leftPropellerA = 0;
+	}
+
+	if (leftPropellerB != 0) {
+		delete leftPropellerB;
+		leftPropellerB = 0;
+	}
+
+	if (rightPropellerA != 0) {
+		delete rightPropellerA;
+		rightPropellerA = 0;
+	}
+
+	if (rightPropellerB != 0) {
+		delete rightPropellerB;
+		rightPropellerB = 0;
+	}
 }
 
 HRESULT ShipModel::initialize(ID3D11Device* d3dDevice, vector<Transformable*>* bones)
