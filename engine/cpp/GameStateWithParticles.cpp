@@ -360,7 +360,12 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 			}
 		}
 		if (m_laserWeaponExpired) {
-			m_lasers->clear();
+			vector<ActiveSplineParticles<UniformRandomSplineModel>*>::iterator it = m_lasers->begin();
+			while (it != m_lasers->end()){
+				delete(*it);
+				it = m_lasers->erase(it);
+			}
+			//m_lasers->clear();
 			if (m_weaponLaserStart) delete m_weaponLaserStart;
 			if (m_weaponLaserEnd) delete m_weaponLaserEnd;
 			m_weaponLaserStart = 0;
