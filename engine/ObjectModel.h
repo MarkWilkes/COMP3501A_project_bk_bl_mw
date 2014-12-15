@@ -22,6 +22,7 @@ class ObjectModel : public LogUser {
 		ObjectModel(IGeometry* geometry, ObjectType type, int life);
 		virtual ~ObjectModel(void);
 
+		Transformable* getTransformable();
 		virtual XMFLOAT3 getBoundingOrigin();
 		virtual float getBoundingRadius();
 

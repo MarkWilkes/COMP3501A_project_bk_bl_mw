@@ -34,6 +34,11 @@ ObjectModel::~ObjectModel(){
 	}
 }
 
+Transformable* ObjectModel::getTransformable()
+{
+	return tForms->at(0);
+}
+
 
 XMFLOAT3 ObjectModel::getBoundingOrigin(){
 

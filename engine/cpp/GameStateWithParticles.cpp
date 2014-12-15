@@ -69,7 +69,7 @@ m_demoStart(0), m_demoEnd(0),
 m_weaponMode(WEAPON_LASER),
 m_weaponLaserStart(0), m_weaponLaserEnd(0), m_laserWeaponExpired(true),
 m_weaponRocketTransform(0), m_rocketWeaponExpired(true),
-m_weaponSpecialTransform(0), m_specialWeaponExpired(true)
+m_weaponSpecialTransform(0), m_weaponSpecialTarget(0), m_specialWeaponExpired(true), m_weaponSpecialTargetObject(0)
 {
 	if( configureNow ) {
 		if( FAILED(configure()) ) {
@@ -437,9 +437,6 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 	vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::size_type nBalls = m_balls->size();
 	if( nBalls > 0 ) {
 		for( vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::size_type i = nBalls - 1; (i >= 0) && (i < nBalls); --i ) {
-
-			// collision check special weapon
-
 			result = (*m_balls)[i]->update(currentTime, updateTimeInterval, isExpired, true);
 			if( FAILED(result) ) {
 				logMessage(L"Failed to update ball particle system at index = " + std::to_wstring(i) + L".");
@@ -466,6 +463,9 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 		}
 
 		if (isExpired || m_specialWeaponExpired) {
+			if (m_weaponSpecialTargetObject != 0) m_weaponSpecialTargetObject->takeWeaponDamage(2);
+			m_weaponSpecialTargetObject = 0;
+
 			vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::iterator it = m_balls->begin();
 			while (it != m_balls->end()){
 				delete(*it);
@@ -474,6 +474,8 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 
 			if (m_weaponSpecialTransform != 0) delete m_weaponSpecialTransform;
 			m_weaponSpecialTransform = 0;
+
+			m_weaponSpecialTarget = 0;
 
 			m_specialWeaponExpired = true;
 		}
@@ -541,13 +543,39 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 			m_specialWeaponExpired = false;
 			m_weaponSpecialTransform = new Transformable(
 				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
-				XMFLOAT3(0.0f, 0.0f, 0.0f), // Position
-				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				m_shipTransform->getPosition(), // Position
+				m_shipTransform->getOrientation() // Orientation
 				);
 
-			m_weaponSpecialTransform->setParent(m_shipTransform);
+			//m_weaponSpecialTransform->setParent(m_shipTransform);
 
-			if( FAILED(spawnBall(m_weaponSpecialTransform, m_shipTransform, 0)) ) {
+			// collision check special weapon
+			std::vector<ObjectModel *>* collisions = new std::vector<ObjectModel *>();
+			XMFLOAT3 direction = m_weaponSpecialTransform->getForwardLocalDirection();
+			XMVECTOR dirVec = XMLoadFloat3(&direction);
+			XMStoreFloat3(&direction, XMVector3Normalize(dirVec));
+
+			m_tree->checkCollisionsRay(collisions, m_weaponSpecialTransform->getPosition(), direction);
+
+			for (int k = 0; k < collisions->size(); ++k) {
+				XMFLOAT3 shipPos = m_shipTransform->getPosition();
+				XMFLOAT3 objPos = (*collisions)[k]->getBoundingOrigin();
+				XMFLOAT3 diff = XMFLOAT3(shipPos.x - objPos.x, shipPos.y - objPos.y, shipPos.z - objPos.z);
+				XMVECTOR diffVec = XMLoadFloat3(&diff);
+				XMFLOAT3 length;
+				XMStoreFloat3(&length, XMVector3Length(diffVec));
+				if (length.x != 0) { // not the player ship
+					m_weaponSpecialTargetObject = (*collisions)[k];
+					m_weaponSpecialTarget = (*collisions)[k]->getTransformable();
+				}
+			}
+
+			// if player missed, special weapon comes back to ship
+			if (m_weaponSpecialTarget == 0) {
+				m_weaponSpecialTarget = m_shipTransform;
+			}
+
+			if( FAILED(spawnBall(m_weaponSpecialTransform, m_weaponSpecialTarget, 0)) ) {
 				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 			}
 		}
