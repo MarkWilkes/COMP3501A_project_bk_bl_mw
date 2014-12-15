@@ -7,6 +7,36 @@
 - Bernard Llanos, ID: 100793648
 - Mark Wilkes, ID: 100884169
 
+##Game Performance
+
+Known Crash: On player collision with the Galleon ship model (double-sphere bodied ship).
+
+It should be noted that the game might struggle to run at 30fps,
+and may fall below. However, there is a simple solution to
+stopping this from happening.
+Under the configFiles folder in the project, there is a GameState.txt file.
+Lowering the following values may aid system performance:
+
+	- Be careful with the following three values.
+	- treeDepth - 3 minimum.
+	- treeLength - this determines the bounds of the game, be careful.
+	- treeLocation - change the first three values to half of the treeLength.
+	
+	- nAsteroids - 0 possible
+	- nEnemyShipNum - 0 possible
+	- nMineNum - 0 possible
+	
+Just incase the original treeDepth, treeLength, and treeLocation are overwritten, here are some
+optimal values.
+
+INT -- GameState::treeDepth = 4
+DOUBLE -- GameState::treeLength = 1000.0
+FLOAT4 -- GameState::treeLocation = (-500.0, 500.0, -500.0, 0.0)
+
+INT -- GameState::treeDepth = 5
+DOUBLE -- GameState::treeLength = 2000.0
+FLOAT4 -- GameState::treeLocation = (-1000.0, 1000.0, -1000.0, 0.0)
+
 ## Description
 An outer space-themed game. (Refer to project proposal for more details.)
 
@@ -178,6 +208,14 @@ The following works were consulted for ideas during development:
 - Use Visual Studio's image editor to generate MIP maps for textures,
   as mip maps will not be generated at runtime.
 
+## Weapon Controls
+Left click to fire the laser at an enemy.
+Right click to fire the rocket blast at an enemy.
+Press space to launch a homing missile at an enemy.
+	- For the homing missile to work, you must accurately aim the center
+	of the screen at the enemy. Don't worry about missing, it will simply
+	come back to your ship.
+  
 ## Camera Controls
 Toggle Camera Mode:
 - First/third/free Camera: P
