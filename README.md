@@ -9,6 +9,10 @@
 
 ##Game Performance
 
+DirectX Toolkit is provided, however, it may not have been built for the
+system you are using. It might be advisable to redownload and build
+DirectXTK for your machine. This game should work on Windows 7/Windows 8/8.1.
+
 Known Crash: On player death (from collision), the game will crash.
 
 Note the Control + O command to toggle special effects.
