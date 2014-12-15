@@ -631,7 +631,7 @@ HRESULT GameState::spawnPlayerShip()
 	bone->setParent(parent);
 	newObject->addTransformable(bone);
 
-	if (m_tree->addObject(newObject) == -1){
+	if (m_tree->addPlayer(newObject) == -1){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	

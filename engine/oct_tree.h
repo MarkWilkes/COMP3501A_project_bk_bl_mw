@@ -70,6 +70,8 @@ class Octtree{
 
 		ObjectModel * playerObj;
 
+		int ticksForCollision;
+
 		virtual HRESULT refitting();
 		
 		int checkCollisions();

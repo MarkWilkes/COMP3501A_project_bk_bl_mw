@@ -1,7 +1,7 @@
 #include "oct_tree.h"
 #include "ObjectModel.h"
 
-Octtree::Octtree(XMFLOAT3 position, float length, int depth) : rvoSim(0), playerObj(0){
+Octtree::Octtree(XMFLOAT3 position, float length, int depth) : rvoSim(0), playerObj(0), ticksForCollision(0){
 	maxDepth = depth;
 	rootNode = new Octnode(position, length, depth, 0, NULL);
 	completeObjectList = new vector<ObjectModel *>();
@@ -221,34 +221,35 @@ HRESULT Octtree::update(const DWORD currentTime, const DWORD updateTimeInterval)
 			return result;
 		}
 	}
-
-	result = refitting();
-
-	checkCollisions();
-
-	for (size_t i = 0; i < completeObjectList->size(); i++){
-		if (completeObjectList->at(i)->hasCollided()){
-			completeObjectList->at(i)->takeDamage();
-		}
-	}
-
-	trimTree();
 	
-	vector<ObjectModel*>::iterator curr = completeObjectList->begin();
-	while (curr != completeObjectList->end()){
-		if ((*curr)->isDead()){
-			size_t agentNum = (unsigned int)(*curr)->getAgentNum();
-			rvoSim->setAgentPosition(agentNum, RVO::Vector3(0, 0, 0));
-			rvoSim->setAgentRadius(agentNum, 0);
-			rvoSim->setAgentPrefVelocity(agentNum, RVO::Vector3(0, 0, 0));
-			delete (*curr);
-			curr = completeObjectList->erase(curr);
+	if ((++ticksForCollision %= 5) == 0){
+		result = refitting();
+
+		checkCollisions();
+
+		for (size_t i = 0; i < completeObjectList->size(); i++){
+			if (completeObjectList->at(i)->hasCollided()){
+				completeObjectList->at(i)->takeDamage();
+			}
 		}
-		else{
-			curr++;
+
+		trimTree();
+
+		vector<ObjectModel*>::iterator curr = completeObjectList->begin();
+		while (curr != completeObjectList->end()){
+			if ((*curr)->isDead()){
+				size_t agentNum = (unsigned int)(*curr)->getAgentNum();
+				rvoSim->setAgentPosition(agentNum, RVO::Vector3(0, 0, 0));
+				rvoSim->setAgentRadius(agentNum, 0);
+				rvoSim->setAgentPrefVelocity(agentNum, RVO::Vector3(0, 0, 0));
+				delete (*curr);
+				curr = completeObjectList->erase(curr);
+			}
+			else{
+				curr++;
+			}
 		}
 	}
-
 	return result;
 }
 
