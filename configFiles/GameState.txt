@@ -67,14 +67,15 @@ DIRECTORY -- shipmodel::inputConfigFilePath = "..\configFiles\geometry"
 INT -- GameStateWithParticles::explosionLife = 5000
 INT -- GameStateWithParticles::jetLife = 2000
 INT -- GameStateWithParticles::laserLife = 0
+INT -- GameStateWithParticles::ballLife = 0
 
 # Detailed laser particle system external configuration
 # -----------------------------------------------------
 INT -- GameStateWithParticles::laser_nSplinesPerLaser = 1
-INT -- GameStateWithParticles::laser_nSegmentsPerSpline = 4
+INT -- GameStateWithParticles::laser_nSegmentsPerSpline = 2
 # Units are units per second (convention from the Transformable class)
-DOUBLE -- GameStateWithParticles::laser_controlPointSpeed = 30.0
-DOUBLE -- GameStateWithParticles::laser_maxRadius = 1.0
+DOUBLE -- GameStateWithParticles::laser_controlPointSpeed = 20.0
+DOUBLE -- GameStateWithParticles::laser_maxRadius = 3.0
 DOUBLE -- GameStateWithParticles::laser_linearSpeed = 0.001
 DOUBLE -- GameStateWithParticles::laser_maxRoll = 0.0
 DOUBLE -- GameStateWithParticles::laser_maxPitch = 0.0
@@ -82,6 +83,22 @@ DOUBLE -- GameStateWithParticles::laser_maxYaw = 0.0
 DOUBLE -- GameStateWithParticles::laser_rollSpeed = 0.0
 DOUBLE -- GameStateWithParticles::laser_pitchSpeed = 0.0
 DOUBLE -- GameStateWithParticles::laser_yawSpeed = 0.0
+
+# Detailed ball lightning particle system external configuration
+# --------------------------------------------------------------
+INT -- GameStateWithParticles::ball_nSegmentsMax = 64
+INT -- GameStateWithParticles::ball_nSegmentsInitial = 3
+# Units are units per second (convention from the Transformable class)
+DOUBLE -- GameStateWithParticles::ball_controlPointSpeed = 100.0
+DOUBLE -- GameStateWithParticles::ball_maxRadius = 10.0
+DOUBLE -- GameStateWithParticles::ball_maxRoll = 0.0
+DOUBLE -- GameStateWithParticles::ball_maxPitch = 0.0
+DOUBLE -- GameStateWithParticles::ball_maxYaw = 0.0
+DOUBLE -- GameStateWithParticles::ball_thresholdDistance = 100.0
+DOUBLE -- GameStateWithParticles::ball_splineParameterSpeed = 0.15
+DOUBLE -- GameStateWithParticles::ball_splineParameterOffset = 0.0
+BOOL -- GameStateWithParticles::ball_loopOverSpline = false
+DOUBLE -- GameStateWithParticles::ball_radius = 1.5
 
 # Demo mode configuration
 # -----------------------
@@ -103,6 +120,11 @@ DIRECTORY -- jet::inputConfigFilePath = "..\configFiles\geometry"
 # -------------------------------------------------
 FILENAME -- laser::inputConfigFileName = "laser.txt"
 DIRECTORY -- laser::inputConfigFilePath = "..\configFiles\geometry"
+
+# Ball particle system internal configuration
+# -------------------------------------------------
+FILENAME -- ball::inputConfigFileName = "ball_RandomBurstCone.txt"
+DIRECTORY -- ball::inputConfigFilePath = "..\configFiles\geometry"
 
 # ///////////////////////////////////
 # Screen-Space Special Effects

@@ -143,6 +143,9 @@ The following works were consulted for ideas during development:
 	- Credit: Department of Computer Science, University of North Carolina at Chapel Hill
 	- Retrieved December 1, 2014
 	- Usage terms: Permissive (http://gamma.cs.unc.edu/RVO2/downloads/)
+- "Orchid" (`textures\IMG_1931.JPG`)
+  - Image Source: Bernard Llanos
+
 ### Textures used by test code only
 
 - "King Fire in California, False-Color Infrared" (`textures\test\kingfire_oli_2014262_swir_lrg.jpg`)

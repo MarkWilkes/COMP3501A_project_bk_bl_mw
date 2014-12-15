@@ -24,13 +24,15 @@ Description
 
 #include <DirectXMath.h>
 #include "Transformable.h"
+#include "PropellerTransformable.h"
 #include "CubeModel.h"
-#include "GridQuadTextured.h"
+#include "SphereModel.h"
 #include "LogUser.h"
 #include "../../oct_tree.h"
 #include "../../ObjectModel.h"
 #include "IGeometry.h"
 #include <string>
+#include <vector>
 
 // Default log message prefix used before more information is available
 #define SHIPMODEL_START_MSG_PREFIX L"ShipModel "
@@ -47,7 +49,7 @@ or constructor/function arguments (where necessary)
 Refer to LogUser.h and ConfigUser.h
 */
 #define SHIPMODEL_LOGUSER_SCOPE		L"ShipModel_LogUser"
-#define SHIPMODEL_CONFIGUSER_SCOPE		L"ShipModel_ConfigUser"
+#define SHIPMODEL_CONFIGUSER_SCOPE	L"ShipModel_ConfigUser"
 
 class ShipModel : public IGeometry, public LogUser
 {
@@ -74,6 +76,11 @@ private:
 	CubeModel* body;
 	CubeModel* leftWing;
 	CubeModel* rightWing;
+	SphereModel* capsule;
+	CubeModel* leftPropellerA;
+	CubeModel* leftPropellerB;
+	CubeModel* rightPropellerA;
+	CubeModel* rightPropellerB;
 
 	ShipModel(const ShipModel& other);
 	ShipModel& operator=(const ShipModel& other);

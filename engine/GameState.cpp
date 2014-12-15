@@ -21,7 +21,11 @@ CONFIGUSER_INPUT_FILE_NAME_FIELD,
 GAMESTATE_SCOPE,
 CONFIGUSER_INPUT_FILE_PATH_FIELD
 ),
-m_camera(0), m_tree(0), m_asteroid(0), m_ship(0), m_bSpawnGrid(false), m_nAsteroids(0), m_asteroidGridSpacing(1.0f), m_nAsteroidsX(0), m_nAsteroidsY(0), m_nAsteroidsZ(0), m_mine(0), m_galleon(0) {
+m_camera(0), m_tree(0), m_asteroid(0), m_ship(0),
+m_bSpawnGrid(false), m_nAsteroids(0), m_asteroidGridSpacing(1.0f),
+m_nAsteroidsX(0), m_nAsteroidsY(0), m_nAsteroidsZ(0), m_mine(0), m_galleon(0),
+m_shipTransform(0)
+{
 	if (configureNow) {
 		if( FAILED(configure()) ) {
 			throw std::exception("GameState configuration failed.");
@@ -477,7 +481,6 @@ HRESULT GameState::fillOctree(void) {
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	
-	
 	if (FAILED(spawnEnemyShip(m_nEShip))){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
@@ -600,9 +603,14 @@ HRESULT GameState::initializeShip(ID3D11Device* d3dDevice)
 {
 	vector<Transformable*>* bones = new vector<Transformable*>();
 
-	bones->push_back(new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)));
-	bones->push_back(new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f)));
-	bones->push_back(new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f)));
+	bones->push_back(new Transformable(XMFLOAT3(1.0f, 0.75f, 4.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)));
+	bones->push_back(new Transformable(XMFLOAT3(1.0f, 0.75f, 3.0f), XMFLOAT3(-0.90f, 0.0f, 1.2f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f)));
+	bones->push_back(new Transformable(XMFLOAT3(1.0f, 0.75f, 3.0f), XMFLOAT3(0.90f, 0.0f, 1.2f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f)));
+	bones->push_back(new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.25f, 1.5f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)));
+	bones->push_back(new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)));
+	bones->push_back(new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f)));
+	bones->push_back(new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)));
+	bones->push_back(new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f)));
 
 	HRESULT result = m_ship->initialize(d3dDevice, bones);
 
@@ -689,18 +697,56 @@ HRESULT GameState::spawnPlayerShip()
 	newObject = new ObjectModel(m_ship, ObjectType::PlayerShip, m_ShipPlayerLife);
 
 	//root
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	bone = new Transformable(XMFLOAT3(1.0f, 0.75f, 4.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	parent = bone;
 	newObject->addTransformable(bone);
 
+	Transformable* lWing;
+	Transformable* rWing;
+
 	//left wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
+	bone = new Transformable(XMFLOAT3(1.0f, 0.75f, 3.0f), XMFLOAT3(-0.9f, 0.0f, 1.2f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
+	bone->setParent(parent);
+	newObject->addTransformable(bone);
+	lWing = bone;
+
+	//right wing
+	bone = new Transformable(XMFLOAT3(1.0f, 0.75f, 3.0f), XMFLOAT3(0.9f, 0.0f, 1.2f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
+	bone->setParent(parent);
+	newObject->addTransformable(bone);
+	rWing = bone;
+
+	//capsule
+	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.25f, 1.5f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	bone->setParent(parent);
 	newObject->addTransformable(bone);
 
-	//right wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
-	bone->setParent(parent);
+	//left propeller A
+	XMFLOAT4 leftPropAQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4(&leftPropAQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f));
+	bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), leftPropAQuat);
+	bone->setParent(lWing);
+	newObject->addTransformable(bone);
+
+	//left propeller B
+	XMFLOAT4 leftPropBQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4(&leftPropBQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, XM_PI / 2));
+	bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), leftPropBQuat);
+	bone->setParent(lWing);
+	newObject->addTransformable(bone);
+
+	//right propeller A
+	XMFLOAT4 rightPropAQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4(&rightPropAQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f));
+	bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), rightPropAQuat);
+	bone->setParent(rWing);
+	newObject->addTransformable(bone);
+
+	//right propeller B
+	XMFLOAT4 rightPropBQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4(&rightPropBQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, XM_PI / 2));
+	bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), rightPropBQuat);
+	bone->setParent(rWing);
 	newObject->addTransformable(bone);
 
 	if (m_tree->addPlayer(newObject) == -1){
@@ -708,6 +754,7 @@ HRESULT GameState::spawnPlayerShip()
 	}
 	
 	m_camera->SetFollowTransform(parent);
+	m_shipTransform = parent;
 	return ERROR_SUCCESS;
 }
 
@@ -736,16 +783,53 @@ HRESULT GameState::spawnEnemyShip(const size_t n){
 		parent = bone;
 		newObject->addTransformable(bone);
 
+		Transformable* lWing;
+		Transformable* rWing;
+
 		//left wing
 		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
 		bone->setParent(parent);
 		newObject->addTransformable(bone);
+		lWing = bone;
 
 		//right wing
 		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
 		bone->setParent(parent);
 		newObject->addTransformable(bone);
+		rWing = bone;
 
+		//capsule
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.25f, 1.5f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+		//left propeller A
+		XMFLOAT4 leftPropAQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		XMStoreFloat4(&leftPropAQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f));
+		bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), leftPropAQuat);
+		bone->setParent(lWing);
+		newObject->addTransformable(bone);
+
+		//left propeller B
+		XMFLOAT4 leftPropBQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		XMStoreFloat4(&leftPropBQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, XM_PI / 2));
+		bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), leftPropBQuat);
+		bone->setParent(lWing);
+		newObject->addTransformable(bone);
+
+		//right propeller A
+		XMFLOAT4 rightPropAQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		XMStoreFloat4(&rightPropAQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, 0.0f));
+		bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), rightPropAQuat);
+		bone->setParent(rWing);
+		newObject->addTransformable(bone);
+
+		//right propeller B
+		XMFLOAT4 rightPropBQuat = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		XMStoreFloat4(&rightPropBQuat, XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, XM_PI / 2));
+		bone = new PropellerTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.6f), rightPropBQuat);
+		bone->setParent(rWing);
+		newObject->addTransformable(bone);
 
 		if (m_tree->addObject(newObject) == -1){
 			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);

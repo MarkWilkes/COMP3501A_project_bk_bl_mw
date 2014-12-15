@@ -41,6 +41,7 @@ HRESULT SphereModel::initialize(ID3D11Device* const device) {
 	Each face of the cube is a different color so that it is clear which side
 	is in view (assuming no custom colors were passed to the constructor).
 	*/
+	XMFLOAT4 vertexColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	size_t vertexCount = m_circle*m_loop;
 	size_t indexCount = m_circle*m_loop * 6;
 
@@ -56,11 +57,14 @@ HRESULT SphereModel::initialize(ID3D11Device* const device) {
 
 			m_phi = static_cast<float>(2 * j*3.1416 / m_circle); // from 0 to 2PI
 
+			vertexColor = XMFLOAT4(static_cast<float>(i / (m_segment + 0.01)),
+				static_cast<float>(j / (m_circle + 0.01)), 0.05f, 1.0f);
+			if (m_pColors) { vertexColor = *m_pColors; }
+
 			thisnor = // normal direction
 				XMFLOAT3(cos(m_theta)*sin(m_phi), sin(m_theta)*sin(m_phi), cos(m_phi));
 			vertices[i*m_circle + j].position = XMFLOAT3(thisnor.x*m_radius, thisnor.y*m_radius, thisnor.z*m_radius);
-			vertices[i*m_circle + j].color = XMFLOAT4(static_cast<float>(i / (m_segment + 0.01)),
-				static_cast<float>(j / (m_circle + 0.01)), 0.05f, 1.0f);
+			vertices[i*m_circle + j].color = vertexColor;
 			//vertices[i*m_circle + j].color = XMFLOAT4(0.5, 0.5, 0.5, 1.0);
 
 		}

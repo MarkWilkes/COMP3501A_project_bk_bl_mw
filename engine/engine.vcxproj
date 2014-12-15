@@ -11,7 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cpp\physics\HomingTransformable.cpp" />
+    <ClCompile Include="cpp\physics\HomingSpline.cpp" />
     <ClCompile Include="cpp\physics\BasicSpline.cpp" />
+    <ClCompile Include="cpp\physics\PropellerTransformable.cpp" />
     <ClCompile Include="cpp\physics\WanderingLineSpline.cpp" />
     <ClCompile Include="cpp\geometry\UniformRandomSplineModel.cpp" />
     <ClCompile Include="cpp\physics\WanderingLineTransformable.cpp" />
@@ -46,6 +49,7 @@
     <ClCompile Include="cpp\util\Texture.cpp" />
     <ClCompile Include="cpp\util\TextureFromDDS.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GridCubeTextured.cpp" />
     <ClCompile Include="ObjectModel.cpp" />
     <ClCompile Include="oct_node.cpp" />
     <ClCompile Include="oct_tree.cpp" />
@@ -70,8 +74,12 @@
     <ClCompile Include="test\cpp\TexturedSphereTestState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GridCubeTextured.h" />
+    <ClInclude Include="header\physics\HomingTransformable.h" />
+    <ClInclude Include="header\physics\HomingSpline.h" />
     <ClInclude Include="header\geometry\UniformRandomSplineModel.h" />
     <ClInclude Include="header\physics\BasicSpline.h" />
+    <ClInclude Include="header\physics\PropellerTransformable.h" />
     <ClInclude Include="header\physics\WanderingLineSpline.h" />
     <ClInclude Include="header\physics\WanderingLineTransformable.h" />
     <ClInclude Include="header\rendering\SplineParticlesRenderer.h" />

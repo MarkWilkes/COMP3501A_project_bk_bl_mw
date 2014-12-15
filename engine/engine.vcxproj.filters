@@ -207,6 +207,9 @@
     <ClCompile Include="cpp\geometry\RandomBurstCone.cpp">
       <Filter>source\geometry</Filter>
     </ClCompile>
+    <ClCompile Include="GridCubeTextured.cpp">
+      <Filter>Unprocessed Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="cpp\geometry\MineShipModel.cpp">
       <Filter>source\geometry</Filter>
     </ClCompile>
@@ -241,6 +244,15 @@
       <Filter>source\physics</Filter>
     </ClCompile>
     <ClCompile Include="cpp\physics\BasicSpline.cpp">
+      <Filter>source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\physics\HomingSpline.cpp">
+      <Filter>source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\physics\HomingTransformable.cpp">
+      <Filter>source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\physics\PropellerTransformable.cpp">
       <Filter>source\physics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -401,6 +413,9 @@
     <ClInclude Include="header\geometry\RandomBurstCone.h">
       <Filter>header\geometry</Filter>
     </ClInclude>
+    <ClInclude Include="GridCubeTextured.h">
+      <Filter>Unprocessed Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="header\geometry\MineShipModel.h">
       <Filter>header\geometry</Filter>
     </ClInclude>
@@ -435,6 +450,15 @@
       <Filter>header\physics</Filter>
     </ClInclude>
     <ClInclude Include="header\physics\BasicSpline.h">
+      <Filter>header\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\physics\HomingSpline.h">
+      <Filter>header\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\physics\HomingTransformable.h">
+      <Filter>header\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\physics\PropellerTransformable.h">
       <Filter>header\physics</Filter>
     </ClInclude>
   </ItemGroup>
