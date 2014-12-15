@@ -326,6 +326,33 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 				XMStoreFloat3(&length, XMVector3Length(diffVec));
 				if (length.x != 0) { // not the player ship
 					(*collisions)[k]->takeWeaponDamage(1);
+
+					float u, v, w; // Random sampling variables
+					static std::default_random_engine generator;
+					static std::uniform_real_distribution<float> distribution(0.0, 1.0);
+					float theta, phi, radius; // Spherical polar coordinates
+
+					u = distribution(generator);
+					v = distribution(generator);
+					w = distribution(generator);
+					theta = DirectX::XM_2PI * u;
+					phi = XMScalarACos(2.0f*v - 1.0f);
+					radius = cbrtf(w) * m_demo_zoneRadius * 0.1f;
+
+					Transformable* transform = new Transformable(
+						XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+						(*collisions)[k]->getBoundingOrigin(),
+						m_weaponRocketTransform->getOrientation() // Orientation
+						);
+
+
+					m_explosions->emplace_back(new ActiveParticles<UniformBurstSphere>(
+						m_explosionModel,
+						transform,
+						static_cast<DWORD>(static_cast<float>(m_explosionLifespan)* w),
+						m_currentTime,
+						XMFLOAT3(1.0f, 1.0f, 1.0f))
+						);
 				}
 			}
 
@@ -463,7 +490,36 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 		}
 
 		if (isExpired || m_specialWeaponExpired) {
-			if (m_weaponSpecialTargetObject != 0) m_weaponSpecialTargetObject->takeWeaponDamage(2);
+			if (m_weaponSpecialTargetObject != 0) {
+				m_weaponSpecialTargetObject->takeWeaponDamage(2);
+
+				float u, v, w; // Random sampling variables
+				static std::default_random_engine generator;
+				static std::uniform_real_distribution<float> distribution(0.0, 1.0);
+				float theta, phi, radius; // Spherical polar coordinates
+
+				u = distribution(generator);
+				v = distribution(generator);
+				w = distribution(generator);
+				theta = DirectX::XM_2PI * u;
+				phi = XMScalarACos(2.0f*v - 1.0f);
+				radius = cbrtf(w) * m_demo_zoneRadius;
+
+				Transformable* transform = new Transformable(
+					XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+					m_weaponSpecialTargetObject->getBoundingOrigin(),
+					m_weaponSpecialTransform->getOrientation() // Orientation
+					);
+
+
+				m_explosions->emplace_back(new ActiveParticles<UniformBurstSphere>(
+					m_explosionModel,
+					transform,
+					static_cast<DWORD>(static_cast<float>(m_explosionLifespan)* w),
+					m_currentTime,
+					XMFLOAT3(1.0f, 1.0f, 1.0f))
+					);
+			}
 			m_weaponSpecialTargetObject = 0;
 
 			vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::iterator it = m_balls->begin();

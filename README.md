@@ -11,6 +11,8 @@
 
 Known Crash: On player collision with the Galleon ship model (double-sphere bodied ship).
 
+Note the Control + O command to toggle special effects.
+
 It should be noted that the game might struggle to run at 30fps,
 and may fall below. However, there is a simple solution to
 stopping this from happening.
