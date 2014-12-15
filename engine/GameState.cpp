@@ -139,6 +139,7 @@ HRESULT GameState::configure(void) {
 
 	int nShipEnemyNum = GAMESTATE_SHIP_ENEMY_NUM_DEFAULT;
 	int nMineNum = GAMESTATE_MINE_NUM_DEFAULT;
+	int nGalleonNum = GAMESTATE_GALLEON_NUM_DEFAULT;
 
 	if (hasConfigToUse()) {
 
@@ -227,6 +228,12 @@ HRESULT GameState::configure(void) {
 			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_MINE_NUM_FIELD, intValue)){
 				nMineNum = *intValue;
 			}
+
+			if (retrieve<Config::DataType::INT, int>(GAMESTATE_SCOPE, GAMESTATE_GALLEON_NUM_FIELD, intValue)){
+				nGalleonNum = *intValue;
+			}
+
+
 			// Initialize geometry members
 			// ---------------------------
 			if( FAILED(configureGeometry()) ) {
@@ -298,7 +305,10 @@ HRESULT GameState::configure(void) {
 		nMineNum = GAMESTATE_MINE_NUM_DEFAULT;
 		logMessage(L"nMineNum cannot be zero or negative. Reverting to default value of " + std::to_wstring(nMineNum));
 	}
-
+	if (nGalleonNum < 0){
+		nGalleonNum = GAMESTATE_GALLEON_NUM_DEFAULT;
+		logMessage(L"nGalleonNum cannot be zero or negative. Reverting to default value of " + std::to_wstring(nGalleonNum));
+	}
 
 	// Initialization
 	m_bSpawnGrid = bSpawnGrid;
@@ -314,6 +324,7 @@ HRESULT GameState::configure(void) {
 	m_GalleonLife = nGalleonLife;
 	m_nEShip = nShipEnemyNum;
 	m_nMine = nMineNum;
+	m_nGalleon = nGalleonNum;
 
 	m_tree = new Octtree(treeLocation, static_cast<float>(treeLength), treeDepth);
 
@@ -489,7 +500,7 @@ HRESULT GameState::fillOctree(void) {
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 
-	if (FAILED(spawnGalleon())){
+	if (FAILED(spawnGalleon(m_nGalleon))){
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
 	}
 	return ERROR_SUCCESS;
@@ -900,7 +911,7 @@ HRESULT GameState::spawnMine(const size_t m_nMine){
 	return ERROR_SUCCESS;
 }
 
-HRESULT GameState::spawnGalleon(){
+HRESULT GameState::spawnGalleon(const size_t n){
 	if (m_galleon == 0){
 		logMessage(L"Cannot spawn the galleon before the galleon has been constructed and configured.");
 		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_WRONG_STATE);
@@ -910,35 +921,45 @@ HRESULT GameState::spawnGalleon(){
 	Transformable* bone = 0;
 	Transformable* parent = 0;
 
-	newObject = new ObjectModel(m_galleon, ObjectType::GalleonShip,m_GalleonLife);
+	XMFLOAT3 offset;
+	float offSX, offSY, offSZ;
 
-	//root
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-10.0f, -10.0f, 0.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	parent = bone;
-	newObject->addTransformable(bone);
+	for (size_t i = 0; i < n; i++){
+		newObject = new ObjectModel(m_galleon, ObjectType::GalleonShip, m_GalleonLife);
 
-	//left wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		offSX = (float)(rand() % 500 - 250);
+		offSY = (float)(rand() % 500 - 250);
+		offSZ = (float)(rand() % 500 - 250);
+		offset = XMFLOAT3(offSX, offSY, offSZ);
 
-	//right wing
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//root
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), offset, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		parent = bone;
+		newObject->addTransformable(bone);
 
-	//front body
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//left wing
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	//back body
-	bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	bone->setParent(parent);
-	newObject->addTransformable(bone);
+		//right wing
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT4(0.0f, -0.5f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
 
-	if (m_tree->addObject(newObject) == -1){
-		return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		//front body
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+		//back body
+		bone = new Transformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		bone->setParent(parent);
+		newObject->addTransformable(bone);
+
+		if (m_tree->addObject(newObject) == -1){
+			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		}
 	}
 	return ERROR_SUCCESS;
 	//return m_galleon->spawn(m_tree);

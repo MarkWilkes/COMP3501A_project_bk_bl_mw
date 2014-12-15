@@ -82,6 +82,9 @@
 #define GAMESTATE_MINE_NUM_FIELD L"nMineNum"
 #define GAMESTATE_MINE_NUM_DEFAULT 10
 
+#define GAMESTATE_GALLEON_NUM_FIELD L"nGalleonNum"
+#define GAMESTATE_GALLEON_NUM_DEFAULT 10
+
 
 
 // LogUser and ConfigUser configuration parameters
@@ -130,6 +133,7 @@ private:
 	int m_asteroidLife, m_mineLife, m_ShipPlayerLife, m_ShipEnemyLife, m_GalleonLife;
 	int m_nEShip;
 	int m_nMine;
+	int m_nGalleon;
 
 public:
 	/* 'configureNow' allows derived classes to postpone configuration
@@ -190,7 +194,7 @@ protected:
 
 	virtual HRESULT spawnMine(const size_t n);
 
-	virtual HRESULT spawnGalleon();
+	virtual HRESULT spawnGalleon(const size_t n);
 
 	// Particle system API (implemented in a derived class)
 	// ----------------------------------------------------
