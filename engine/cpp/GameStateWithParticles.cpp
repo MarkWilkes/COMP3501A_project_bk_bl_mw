@@ -68,7 +68,8 @@ m_demo_zoneRadius(GAMESTATEWITHPARTICLES_DEMO_SHOWAREA_DEFAULT),
 m_demoStart(0), m_demoEnd(0),
 m_weaponMode(WEAPON_LASER),
 m_weaponLaserStart(0), m_weaponLaserEnd(0), m_laserWeaponExpired(true),
-m_weaponRocketTransform(0), m_rocketWeaponExpired(true)
+m_weaponRocketTransform(0), m_rocketWeaponExpired(true),
+m_weaponSpecialTransform(0), m_specialWeaponExpired(true)
 {
 	if( configureNow ) {
 		if( FAILED(configure()) ) {
@@ -399,6 +400,7 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 			} else {
 				ballTransform = static_cast<HomingTransformable*>((*m_balls)[i]->getTransform());
 				if( isExpired || ballTransform->isAtEnd() ) {
+					m_specialWeaponExpired = true;
 					result = removeBall(ballTransform);
 					if( FAILED(result) ) {
 						logMessage(L"Failed to remove expired ball particle system at index = " + std::to_wstring(i) + L".");
@@ -414,6 +416,19 @@ HRESULT GameStateWithParticles::update(const DWORD currentTime, const DWORD upda
 					}
 				}
 			}
+		}
+
+		if (isExpired || m_specialWeaponExpired) {
+			vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>::iterator it = m_balls->begin();
+			while (it != m_balls->end()){
+				delete(*it);
+				it = m_balls->erase(it);
+			}
+
+			if (m_weaponSpecialTransform != 0) delete m_weaponSpecialTransform;
+			m_weaponSpecialTransform = 0;
+
+			m_specialWeaponExpired = true;
 		}
 	}
 
@@ -458,7 +473,7 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 			}
 		}
 	}
-	else if (mouse.IsPressed(Mouse::RIGHT)) {
+	if (mouse.IsPressed(Mouse::RIGHT)) {
 		if (m_rocketWeaponExpired && m_weaponRocketTransform == 0) {
 			m_rocketWeaponExpired = false;
 			m_weaponRocketTransform = new Transformable(
@@ -474,8 +489,21 @@ HRESULT GameStateWithParticles::poll(Keyboard& input, Mouse& mouse)
 			}
 		}
 	}
-	else if (mouse.IsPressed(Mouse::MIDDLE)) {
+	if (input.Up(VK_SPACE)) {
+		if (m_specialWeaponExpired && m_weaponSpecialTransform == 0) {
+			m_specialWeaponExpired = false;
+			m_weaponSpecialTransform = new Transformable(
+				XMFLOAT3(1.0f, 1.0f, 1.0f), // Scale
+				XMFLOAT3(0.0f, 0.0f, 0.0f), // Position
+				XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) // Orientation
+				);
 
+			m_weaponSpecialTransform->setParent(m_shipTransform);
+
+			if( FAILED(spawnBall(m_weaponSpecialTransform, m_shipTransform, 0)) ) {
+				return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+			}
+		}
 	}
 
 	if (mouse.IsPressed(Mouse::LEFT) == false) {
@@ -1159,9 +1187,9 @@ HRESULT GameStateWithParticles::updateDemo(void) {
 				);
 		}
 
-		if( FAILED(spawnBall(m_demoStart, m_shipTransform, 0)) ) {
-			return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
-		}
+		//if( FAILED(spawnBall(m_demoStart, m_shipTransform, 0)) ) {
+		//	return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_BL_ENGINE, ERROR_FUNCTION_CALL);
+		//}
 	}
 	return ERROR_SUCCESS;
 }

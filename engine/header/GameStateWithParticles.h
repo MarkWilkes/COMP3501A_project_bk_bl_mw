@@ -281,6 +281,8 @@ private:
 
 	// The model for all ball lightning effects
 	GAMESTATEWITHPARTICLES_BALL_MODELCLASS* m_ballModel;
+	bool			 m_specialWeaponExpired;
+	Transformable*   m_weaponSpecialTransform;
 
 	// Keeps track of the positions at which to render ball lightning effects
 	std::vector<ActiveParticles<GAMESTATEWITHPARTICLES_BALL_MODELCLASS>*>* m_balls;
