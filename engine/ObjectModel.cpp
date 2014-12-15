@@ -8,15 +8,16 @@ It is used for the storage of these attributes in the OctTree
 
 #include "ObjectModel.h"
 #include "FlatAtomicConfigIO.h"
+#include <stdio.h>
 
 #define OBJECTMODEL_CONFIGIO_CLASS FlatAtomicConfigIO
 
 // Logging output and configuration input filename
 #define OBJECTMODEL_FILE_NAME L"ObjectModel.txt"
 
-ObjectModel::ObjectModel(IGeometry* geometry) :
+ObjectModel::ObjectModel(IGeometry* geometry, ObjectType type, int lifeAmount) :
 LogUser(true, OBJECTMODEL_START_MSG_PREFIX),
-model(0), tForms(0)
+model(0), tForms(0), type(type), seeking(type == ObjectType::Other ? false : true), goalPoint(0, 0, 0), moveToPoint(0, 0, 0), life(lifeAmount)
 {
 	model = geometry;
 	tForms = new vector<Transformable *>();
@@ -35,6 +36,11 @@ ObjectModel::~ObjectModel(){
 
 
 XMFLOAT3 ObjectModel::getBoundingOrigin(){
+
+	int val;
+	if (type == ObjectType::MineShip){
+		val = life;
+	}
 	XMFLOAT3 pos = model->getPosition();
 	
 	XMFLOAT3 newPos;
@@ -75,7 +81,21 @@ float ObjectModel::getBoundingRadius(){
 HRESULT ObjectModel::updateContainedTransforms(const DWORD currentTime, const DWORD updateTimeInterval){
 	HRESULT result;
 	for (std::vector<Transformable*>::size_type i = 0; i < tForms->size(); i++){
-		//tForms->at(i)->Spin(1.0f, 1.0f, 1.0f);
+		if (type == ObjectType::MineShip){
+			//tForms->at(i)->SpinIfParent(2.0f, 2.0f, 2.0f);
+			
+			if (tForms->at(i)->MoveToPointIfParent(moveToPoint)){
+//				float x = 1;
+			}
+			else{
+	//			tForms->at(i)->Spin(2.0f, 2.0f, 2.0f);
+			}
+		}
+		if (type == ObjectType::EnemyShip || type == ObjectType::GalleonShip){
+			//spin towards the moveToPoint
+			
+			tForms->at(i)->MoveToPointIfParent(moveToPoint);
+		}
 		result = ((*tForms)[i])->update(currentTime, updateTimeInterval);
 		if (FAILED(result)){
 			return result;
@@ -103,4 +123,66 @@ HRESULT ObjectModel::draw(ID3D11DeviceContext* const context, GeometryRendererMa
 	}
 
 	return result;
+}
+
+
+XMFLOAT3 ObjectModel::getGoalPos(){
+	return goalPoint;
+}
+
+HRESULT ObjectModel::updateGoalPos(XMFLOAT3 newGoal){
+	goalPoint = newGoal;
+	seeking = false;
+	return ERROR_SUCCESS;
+}
+
+bool ObjectModel::hasGoal(){
+	return !seeking;
+}
+
+HRESULT ObjectModel::updateMoveToPos(XMFLOAT3 newMovePos){
+	moveToPoint = newMovePos;
+	seeking = false;
+	return ERROR_SUCCESS;
+}
+
+float ObjectModel::getMoveDist(){
+	return 0.01f;
+}
+
+int ObjectModel::getAgentNum(){
+	return agentNum;
+}
+
+void ObjectModel::setAgentNum(int aNum){
+	agentNum = aNum;
+}
+
+bool ObjectModel::isDead(){
+	return life <= 0 ? true : false;
+}
+
+bool ObjectModel::takeDamage(){
+	if (collidedWith == ObjectType::MineShip && type != ObjectType::MineShip){
+		life -= 2;
+	}
+	else {
+		life -= 1;
+	}
+
+	resetCollided();
+	return isDead();
+}
+
+bool ObjectModel::hasCollided(){
+	return collided;
+}
+
+void ObjectModel::resetCollided(){
+	collided = false;
+}
+
+void ObjectModel::collideWith(ObjectType collider){
+	collided = true;
+	collidedWith = collider;
 }

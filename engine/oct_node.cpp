@@ -149,6 +149,43 @@ int Octnode::refit(ObjectModel * gameObject){
 	return 0;
 }
 
+int Octnode::refit(XMFLOAT3 pos, float radi){
+	//check to make sure the object's bounded size is less than or equal to the size of the node cube
+	//this is the fast check to make sure it would be able to fit
+	if (radi* 2 > length){
+		return -1;
+	}
+
+	/*this checks if the object is contained within the node's cubic boundaries by checking against 3 planes
+	*these planes are defined as the left side of the cube, the top side of the cube, the front side of the cube
+	*the check against the cube is defined as checking the distance from the bounding sphere's origin against the bounds of the cube
+	*how this bounds checking works is by
+	*/
+
+	//left plane
+
+	//first vector 0th and 4th
+	//second vector 0th and 1st
+	XMFLOAT3 plane1[] = { vertices[0], vertices[4], vertices[1] };
+	if (!spherePlaneCheck(plane1, pos, length, radi)) return -1;
+
+	//top plane
+
+	//first vector 0th and 4th
+	//second vector 0th and 2nd
+	XMFLOAT3 plane2[] = { vertices[0], vertices[4], vertices[2] };
+	if (!spherePlaneCheck(plane2, pos, length, radi)) return -1;
+
+	//front plane
+
+	//first vector 0th and 2nd
+	//second vector 0th and 1st
+	XMFLOAT3 plane3[] = { vertices[0], vertices[2], vertices[1] };
+	if (!spherePlaneCheck(plane3, pos, length, radi)) return -1;
+
+	return 0;
+}
+
 HRESULT Octnode::checkObjectUpdates(vector<ObjectModel*>* outRefit){
 	for (size_t i = 0; i < nodeObjectList->size(); i++){
 		if (refit((*nodeObjectList)[i]) == -1){

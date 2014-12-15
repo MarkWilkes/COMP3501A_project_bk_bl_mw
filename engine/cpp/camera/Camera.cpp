@@ -18,7 +18,7 @@ Camera::Camera(int screenWidth_in, int screenHeight_in)
 	fieldOfView = NOMINAL_FIELD_OF_VIEW;
 	cameraMode = CameraMode::FREE_CAMERA;
 
-	m_transform = new CameraTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -10.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	m_transform = new CameraTransformable(XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -30.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	UpdateMatrices();
 }

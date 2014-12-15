@@ -147,6 +147,9 @@
     <ProjectReference Include="..\DirectXTK\DirectXTK_Desktop_2013.vcxproj">
       <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\RVO2-3D\src\RVODLL.vcxproj">
+      <Project>{2d480a06-aee3-4872-b202-b74015700c1b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EE9C0E97-8193-496B-8C61-41698F8AB67B}</ProjectGuid>
@@ -177,7 +180,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir);$(ProjectDir)\..\win32_base\header\util;$(ProjectDir)\..\win32_base\header\interface;$(ProjectDir)\..\win32_base\header;$(ProjectDir)\header\input;$(ProjectDir)\header\physics;$(ProjectDir)\header\rendering;$(ProjectDir)\header;$(ProjectDir)\test\header;$(ProjectDir)\header\geometry;$(ProjectDir)\header\util;$(ProjectDir)\header\ssse;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\RVO2-3D\src;$(ProjectDir);$(ProjectDir)\..\win32_base\header\util;$(ProjectDir)\..\win32_base\header\interface;$(ProjectDir)\..\win32_base\header;$(ProjectDir)\header\input;$(ProjectDir)\header\physics;$(ProjectDir)\header\rendering;$(ProjectDir)\header;$(ProjectDir)\test\header;$(ProjectDir)\header\geometry;$(ProjectDir)\header\util;$(ProjectDir)\header\ssse;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(ProjectDir);$(ProjectDir)\..\win32_base\header\util;$(ProjectDir)\..\win32_base\header\interface;$(ProjectDir)\..\win32_base\header;$(ProjectDir)\header\input;$(ProjectDir)\header\physics;$(ProjectDir)\header\rendering;$(ProjectDir)\header;$(ProjectDir)\test\header;$(ProjectDir)\header\geometry;$(ProjectDir)\header\util;$(ProjectDir)\header\ssse;$(IncludePath)</IncludePath>

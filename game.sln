@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK_Desktop_2013", "DirectXTK\DirectXTK_Desktop_2013.vcxproj", "{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RVODLL", "RVO2-3D\src\RVODLL.vcxproj", "{2D480A06-AEE3-4872-B202-B74015700C1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -42,6 +44,12 @@ Global
 		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|Win32.Build.0 = Release|Win32
 		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|x64.ActiveCfg = Release|x64
 		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|x64.Build.0 = Release|x64
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Debug|Win32.Build.0 = Debug|Win32
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Debug|x64.ActiveCfg = Debug|Win32
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Release|Win32.ActiveCfg = Release|Win32
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Release|Win32.Build.0 = Release|Win32
+		{2D480A06-AEE3-4872-B202-B74015700C1B}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

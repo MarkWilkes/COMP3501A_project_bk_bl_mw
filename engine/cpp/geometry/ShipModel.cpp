@@ -27,7 +27,7 @@ using namespace DirectX;
 ShipModel::ShipModel()
 : IGeometry(),
 LogUser(true, SHIPMODEL_START_MSG_PREFIX),
-m_bones(0), body(0), leftWing(0), rightWing(0), capsule(0)
+m_bones(0), body(0), leftWing(0), rightWing(0), capsule(0), leftPropellerA(0), leftPropellerB(0), rightPropellerA(0), rightPropellerB(0)
 {}
 
 ShipModel::~ShipModel(void)

@@ -221,6 +221,58 @@ void Transformable::Spin(float roll, float pitch, float yaw) {
 	XMStoreFloat4(&m_orientation, XMQuaternionMultiply(XMLoadFloat4(&m_orientation), yawq));
 }
 
+void Transformable::MoveToPoint(DirectX::XMFLOAT3 pos){
+	updateTransformProperties();
+	
+	XMFLOAT3 forward = XMFLOAT3(0, 0, 1);
+	
+	XMFLOAT3 newDir = XMFLOAT3(pos.x - m_position.x,
+		pos.y - m_position.y,
+		pos.z - m_position.z);
+	
+	XMVECTOR forwardVec = XMLoadFloat3(&forward);
+	forwardVec = XMVector3Normalize(forwardVec);
+	XMVECTOR newVec = XMLoadFloat3(&newDir);
+	newVec = XMVector3Normalize(newVec);
+
+	XMVECTOR axis = XMVector3Cross(forwardVec, newVec);
+	
+	if (XMVector3Equal(axis, XMLoadFloat3(&XMFLOAT3(0, 0, 0)))){
+		axis = XMVectorAdd(axis, XMLoadFloat3(&XMFLOAT3(0.0001f, 0.0001f, 0.0001f)));
+	}
+	
+	XMVECTOR angle = XMVector3AngleBetweenNormals(newVec,forwardVec);
+
+	float angleF;
+	XMStoreFloat(&angleF, angle);
+	
+	XMVECTOR rotq = XMQuaternionRotationAxis(axis, angleF);
+
+
+	XMStoreFloat4(&m_orientation, rotq);
+
+	
+	XMVECTOR ori = XMLoadFloat4(&m_orientation);
+
+	ori = XMQuaternionNormalize(ori);
+
+	XMStoreFloat4(&m_orientation, ori);
+	
+	float xdif(pos.x - m_position.x);
+	float ydif(pos.y - m_position.y);
+	float zdif(pos.z - m_position.z);
+
+	float xdifSq(xdif*xdif);
+	float ydifSq(ydif*ydif);
+	float zdifSq(zdif*zdif);
+
+	float addedDif(ydifSq + xdifSq + zdifSq);
+
+	float magniMove(sqrtf(addedDif));
+
+	Move(magniMove);
+}
+
 bool Transformable::MoveIfParent(float amount)
 {
 	if (m_parent == 0) {
@@ -252,6 +304,14 @@ bool Transformable::SpinIfParent(float roll, float pitch, float yaw)
 {
 	if (m_parent == 0) {
 		Spin(roll, pitch, yaw);
+		return true;
+	}
+	return false;
+}
+
+bool Transformable::MoveToPointIfParent(DirectX::XMFLOAT3 pos){
+	if (m_parent == 0){
+		MoveToPoint(pos);
 		return true;
 	}
 	return false;
